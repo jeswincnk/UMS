@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Student Portal - UMS{% endblock %}</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Sans+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --royal-blue: #1B4F9B;
+      --deep-blue: #143D7A;
+      --light-blue: #2E6BC4;
+      --cream: #F5F8FD;
+      --white: #FFFFFF;
+      --gold: #D4AF37;
+      --text-dark: #2D2D2D;
+      --text-muted: #6B7280;
+      --border-light: #E0E5EC;
+      --shadow-soft: 0 2px 15px rgba(27, 79, 155, 0.08);
+      --shadow-medium: 0 4px 25px rgba(27, 79, 155, 0.12);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Source Sans Pro', sans-serif;
+      background: var(--cream);
+      min-height: 100vh;
+      padding-top: 80px;
+      color: var(--text-dark);
+    }
+
+    h1, h2, h3, h4, h5, .brand-text { font-family: 'Playfair Display', serif; }
+
+    .navbar {
+      background: var(--white);
+      border-bottom: 3px solid var(--royal-blue);
+      box-shadow: var(--shadow-soft);
+      padding: 0.7rem 1.5rem;
+    }
+
+    .navbar-brand {
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      font-size: 1.6rem;
+      color: var(--royal-blue) !important;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .navbar-brand .brand-icon {
+      width: 42px;
+      height: 42px;
+      background: linear-gradient(135deg, var(--royal-blue), var(--deep-blue));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--white);
+      font-size: 1.2rem;
+    }
+
+    .nav-link {
+      color: var(--text-dark) !important;
+      font-weight: 600;
+      padding: 0.7rem 1.2rem !important;
+      margin: 0 0.15rem;
+      border-radius: 6px;
+      transition: all 0.25s ease;
+    }
+
+    .nav-link:hover {
+      color: var(--royal-blue) !important;
+      background: rgba(27, 79, 155, 0.05);
+    }
+
+    .nav-link.active {
+      color: var(--white) !important;
+      background: linear-gradient(135deg, var(--royal-blue), var(--deep-blue));
+    }
+
+    .nav-link i { margin-right: 8px; font-size: 0.9rem; }
+
+    .user-section { display: flex; align-items: center; gap: 15px; }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 14px;
+      background: var(--cream);
+      border-radius: 30px;
+      border: 1px solid var(--border-light);
+    }
+
+    .user-avatar {
+      width: 34px;
+      height: 34px;
+      background: linear-gradient(135deg, var(--royal-blue), var(--light-blue));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--white);
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+
+    .user-name { font-weight: 600; color: var(--text-dark); font-size: 0.9rem; }
+
+    .btn-logout {
+      background: transparent;
+      border: 2px solid var(--royal-blue);
+      color: var(--royal-blue) !important;
+      border-radius: 6px;
+      padding: 6px 16px !important;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: all 0.25s ease;
+    }
+
+    .btn-logout:hover {
+      background: var(--royal-blue);
+      color: var(--white) !important;
+    }
+
+    .main-container { max-width: 1200px; margin: 0 auto; padding: 2rem 1rem; }
+
+    .page-header { margin-bottom: 2rem; }
+    .page-title { font-size: 1.8rem; font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; }
+    .page-title i { color: var(--royal-blue); margin-right: 10px; }
+    .page-subtitle { color: var(--text-muted); font-size: 1rem; }
+
+    .card {
+      background: var(--white);
+      border: none;
+      border-radius: 12px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .card-header {
+      background: transparent;
+      border-bottom: 1px solid var(--border-light);
+      font-weight: 600;
+      padding: 1rem 1.5rem;
+    }
+
+    .card-header i { color: var(--royal-blue); margin-right: 8px; }
+    .card-body { padding: 1.5rem; }
+
+    .card-stats {
+      text-align: center;
+      padding: 1.5rem;
+    }
+
+    .stat-icon {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, var(--royal-blue), var(--light-blue));
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1rem;
+      font-size: 1.5rem;
+      color: var(--white);
+    }
+
+    .stat-value { font-size: 2rem; font-weight: 700; color: var(--text-dark); }
+    .stat-label { color: var(--text-muted); font-size: 0.9rem; }
+
+    .btn-royal {
+      background: linear-gradient(135deg, var(--royal-blue), var(--deep-blue));
+      border: none;
+      color: var(--white);
+      padding: 0.6rem 1.5rem;
+      border-radius: 6px;
+      font-weight: 600;
+      transition: all 0.25s ease;
+    }
+
+    .btn-royal:hover {
+      background: linear-gradient(135deg, var(--deep-blue), var(--royal-blue));
+      color: var(--white);
+      transform: translateY(-1px);
+    }
+
+    .table th { font-weight: 600; color: var(--text-dark); border-bottom-width: 1px; }
+    .table td { vertical-align: middle; }
+
+    .badge { font-weight: 500; }
+  </style>
+  {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="{% url 'public:student_dashboard' %}">
+        <span class="brand-icon"><i class="fas fa-user-graduate"></i></span>
+        Student Portal
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbars">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbars">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link {% if request.path == '/student/' %}active{% endif %}" href="{% url 'public:student_dashboard' %}">
+              <i class="fas fa-th-large"></i>Dashboard
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if 'student/attendance' in request.path %}active{% endif %}" href="{% url 'public:student_attendance' %}">
+              <i class="fas fa-clipboard-check"></i>Attendance
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if 'student/notifications' in request.path %}active{% endif %}" href="{% url 'public:student_notifications' %}">
+              <i class="fas fa-bell"></i>Notifications
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if 'student/results' in request.path %}active{% endif %}" href="{% url 'public:student_results' %}">
+              <i class="fas fa-poll"></i>Results
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if 'profile' in request.path %}active{% endif %}" href="{% url 'public:student_profile' %}">
+              <i class="fas fa-user"></i>Profile
+            </a>
+          </li>
+        </ul>
+        
+        <div class="user-section">
+          <div class="user-info">
+            <div class="user-avatar">{{ student.user.first_name|slice:":1"|upper }}{{ student.user.last_name|slice:":1"|upper }}</div>
+            <span class="user-name">{{ student.user.get_full_name|truncatechars:20 }}</span>
+          </div>
+          <form method="post" action="{% url 'logout' %}" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" class="nav-link btn-logout">
+              <i class="fas fa-sign-out-alt"></i>Logout
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="main-container">
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+      {{ message }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

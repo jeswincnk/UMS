@@ -1,0 +1,104 @@
+﻿{% extends "adminpanel/base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+  <div class="page-header mb-0">
+    <h1 class="page-title mb-0"><i class="fas fa-book"></i>Courses</h1>
+  </div>
+  <div class="d-flex gap-2 align-items-center">
+    <a href="{% url 'adminpanel:course_add' %}" class="btn btn-royal">
+      <i class="fas fa-plus me-2"></i>Add Course
+    </a>
+    <form class="d-flex search-box" method="get" action="">
+      <i class="fas fa-search search-icon"></i>
+      <input name="q" class="form-control" placeholder="Search by code, title, department..." value="{{ query|default:'' }}" style="min-width: 280px;">
+      <button class="btn btn-royal ms-2" type="submit">Search</button>
+    </form>
+  </div>
+</div>
+
+<div class="table-container">
+  <table class="table mb-0">
+    <thead>
+      <tr>
+        <th><i class="fas fa-hashtag"></i>Code</th>
+        <th><i class="fas fa-heading"></i>Title</th>
+        <th><i class="fas fa-star"></i>Credits</th>
+        <th><i class="fas fa-building"></i>Department</th>
+        <th class="text-center"><i class="fas fa-cogs"></i>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for c in courses %}
+        <tr>
+          <td><span class="badge-royal">{{ c.code }}</span></td>
+          <td><strong>{{ c.name|default:c.title }}</strong></td>
+          <td>
+            <span class="d-flex align-items-center gap-1">
+              <i class="fas fa-star" style="color: #D4AF37; font-size: 0.75rem;"></i>
+              {{ c.credits }}
+            </span>
+          </td>
+          <td>
+            {% if c.department %}
+              <span class="badge-outline">{{ c.department.name }}</span>
+            {% else %}
+              <span class="text-muted">—</span>
+            {% endif %}
+          </td>
+          <td class="text-center">
+            <a href="{% url 'adminpanel:course_edit' c.id %}" class="btn btn-sm btn-outline-primary me-1" title="Edit">
+              <i class="fas fa-edit"></i>
+            </a>
+            <a href="{% url 'adminpanel:course_delete' c.id %}" class="btn btn-sm btn-outline-danger" title="Delete">
+              <i class="fas fa-trash"></i>
+            </a>
+          </td>
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="5">
+            <div class="empty-state">
+              <i class="fas fa-book-open"></i>
+              <p class="mb-0">No courses found. <a href="{% url 'adminpanel:course_add' %}">Add one now</a>.</p>
+            </div>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% if courses.has_other_pages %}
+<nav class="mt-4">
+  <ul class="pagination justify-content-center">
+    {% if courses.has_previous %}
+      <li class="page-item">
+        <a class="page-link" href="?q={{ query }}&page={{ courses.previous_page_number }}">
+          <i class="fas fa-chevron-left me-1"></i>Previous
+        </a>
+      </li>
+    {% else %}
+      <li class="page-item disabled"><span class="page-link"><i class="fas fa-chevron-left me-1"></i>Previous</span></li>
+    {% endif %}
+
+    {% for num in courses.paginator.page_range %}
+      {% if num == courses.number %}
+        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+      {% else %}
+        <li class="page-item"><a class="page-link" href="?q={{ query }}&page={{ num }}">{{ num }}</a></li>
+      {% endif %}
+    {% endfor %}
+
+    {% if courses.has_next %}
+      <li class="page-item">
+        <a class="page-link" href="?q={{ query }}&page={{ courses.next_page_number }}">
+          Next<i class="fas fa-chevron-right ms-1"></i>
+        </a>
+      </li>
+    {% else %}
+      <li class="page-item disabled"><span class="page-link">Next<i class="fas fa-chevron-right ms-1"></i></span></li>
+    {% endif %}
+  </ul>
+</nav>
+{% endif %}
+{% endblock %}

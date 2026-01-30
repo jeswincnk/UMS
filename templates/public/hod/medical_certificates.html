@@ -1,0 +1,98 @@
+{% extends 'public/hod/base.html' %}
+
+{% block title %}Medical Certificates - HOD Portal{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title"><i class="fas fa-file-medical"></i> Medical Certificates</h1>
+  <p class="page-subtitle">Review medical certificates submitted by students</p>
+</div>
+
+<div class="row g-4 mb-4">
+  <div class="col-md-4">
+    <div class="card bg-warning text-dark">
+      <div class="card-body text-center">
+        <h3>{{ certificates.count }}</h3>
+        <p class="mb-0">Total Submissions</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card bg-info text-white">
+      <div class="card-body text-center">
+        <h3>{{ certificates|filter_status:"pending"|length }}</h3>
+        <p class="mb-0">Pending Review</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card bg-success text-white">
+      <div class="card-body text-center">
+        <h3>{{ certificates|filter_status:"approved"|length }}</h3>
+        <p class="mb-0">Approved</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <i class="fas fa-list me-2"></i>Certificate Submissions
+  </div>
+  <div class="card-body">
+    {% if certificates %}
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>Student</th>
+            <th>Department</th>
+            <th>Period</th>
+            <th>Submitted</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for cert in certificates %}
+          <tr>
+            <td>
+              <strong>{{ cert.student.user.get_full_name }}</strong>
+              <br><small class="text-muted">{{ cert.student.user.email }}</small>
+            </td>
+            <td>{{ cert.student.department.name }}</td>
+            <td>
+              <span class="badge bg-secondary">
+                {{ cert.month }}/{{ cert.year }}
+              </span>
+            </td>
+            <td>{{ cert.submitted_at|date:"M d, Y" }}</td>
+            <td>
+              {% if cert.status == 'pending' %}
+              <span class="badge bg-warning text-dark"><i class="fas fa-clock me-1"></i>Pending</span>
+              {% elif cert.status == 'approved' %}
+              <span class="badge bg-success"><i class="fas fa-check me-1"></i>Approved</span>
+              {% else %}
+              <span class="badge bg-danger"><i class="fas fa-times me-1"></i>Rejected</span>
+              {% endif %}
+            </td>
+            <td>
+              <a href="{% url 'public:hod_review_certificate' cert.pk %}" class="btn btn-sm btn-outline-warning">
+                <i class="fas fa-eye me-1"></i>Review
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+      <i class="fas fa-folder-open fa-3x text-muted mb-3"></i>
+      <h5 class="text-muted">No Certificates Submitted</h5>
+      <p class="text-muted">Students will submit medical certificates when they have more than 3 leaves in a month.</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

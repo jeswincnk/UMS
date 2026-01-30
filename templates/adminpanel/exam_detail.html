@@ -1,0 +1,183 @@
+{% extends 'adminpanel/base.html' %}
+
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-center">
+  <div>
+    <h1 class="page-title"><i class="fas fa-file-alt"></i>{{ exam.name }}</h1>
+    <p class="page-subtitle">
+      {{ exam.program.name }} | Semester {{ exam.semester }} | {{ exam.academic_year }}
+    </p>
+  </div>
+  <div class="d-flex gap-2">
+    <a href="{% url 'adminpanel:results_entry' exam.pk %}" class="btn btn-success">
+      <i class="fas fa-poll me-2"></i>Enter Results
+    </a>
+    <a href="{% url 'adminpanel:exam_edit' exam.pk %}" class="btn btn-outline-primary">
+      <i class="fas fa-edit me-2"></i>Edit
+    </a>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-lg-8">
+    <!-- Exam Info Card -->
+    <div class="card mb-4">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="fas fa-info-circle"></i>Exam Information</span>
+        {% if exam.result_published %}
+          <span class="badge bg-success">Results Published</span>
+        {% else %}
+          <form method="post" action="{% url 'adminpanel:exam_publish_results' exam.pk %}" class="d-inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-sm btn-warning" 
+                    onclick="return confirm('Are you sure you want to publish results? Students will be able to see their results.')">
+              <i class="fas fa-bullhorn me-1"></i>Publish Results
+            </button>
+          </form>
+        {% endif %}
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6">
+            <p><strong>Program:</strong> {{ exam.program.name }}</p>
+            <p><strong>Semester:</strong> {{ exam.semester }}</p>
+            <p><strong>Academic Year:</strong> {{ exam.academic_year }}</p>
+          </div>
+          <div class="col-md-6">
+            <p><strong>Start Date:</strong> {{ exam.exam_start_date|date:"M d, Y" }}</p>
+            <p><strong>End Date:</strong> {{ exam.exam_end_date|date:"M d, Y" }}</p>
+            <p><strong>Created:</strong> {{ exam.created_at|date:"M d, Y" }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Subjects Card -->
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="fas fa-book"></i>Exam Subjects ({{ subjects.count }})</span>
+      </div>
+      <div class="card-body p-0">
+        {% if subjects %}
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead>
+              <tr>
+                <th>Course</th>
+                <th>Max Marks</th>
+                <th>Pass Marks</th>
+                <th>Exam Date</th>
+                <th class="text-end">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for subject in subjects %}
+              <tr>
+                <td>
+                  <div class="fw-semibold">{{ subject.course.code }}</div>
+                  <small class="text-muted">{{ subject.course.title }}</small>
+                </td>
+                <td>{{ subject.max_marks }}</td>
+                <td>{{ subject.pass_marks }}</td>
+                <td>
+                  {% if subject.exam_date %}
+                    {{ subject.exam_date|date:"M d, Y" }}
+                  {% else %}
+                    <span class="text-muted">-</span>
+                  {% endif %}
+                </td>
+                <td class="text-end">
+                  <form method="post" action="{% url 'adminpanel:exam_delete_subject' exam.pk subject.pk %}" 
+                        class="d-inline" onsubmit="return confirm('Delete this subject?')">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </form>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <div class="text-center py-4">
+          <i class="fas fa-book fa-2x text-muted mb-2"></i>
+          <p class="text-muted mb-0">No subjects added yet</p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Subject Sidebar -->
+  <div class="col-lg-4">
+    <div class="card">
+      <div class="card-header">
+        <i class="fas fa-plus"></i>Add Subject
+      </div>
+      <div class="card-body">
+        {% if available_courses %}
+        <form method="post" action="{% url 'adminpanel:exam_add_subject' exam.pk %}">
+          {% csrf_token %}
+          
+          <div class="mb-3">
+            <label for="course" class="form-label">Course <span class="text-danger">*</span></label>
+            <select class="form-select" id="course" name="course" required>
+              <option value="">Select Course</option>
+              {% for course in available_courses %}
+                <option value="{{ course.pk }}">{{ course.code }} - {{ course.title }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          
+          <div class="row">
+            <div class="col-6 mb-3">
+              <label for="max_marks" class="form-label">Max Marks</label>
+              <input type="number" class="form-control" id="max_marks" name="max_marks" value="100">
+            </div>
+            <div class="col-6 mb-3">
+              <label for="pass_marks" class="form-label">Pass Marks</label>
+              <input type="number" class="form-control" id="pass_marks" name="pass_marks" value="40">
+            </div>
+          </div>
+          
+          <div class="mb-3">
+            <label for="exam_date" class="form-label">Exam Date</label>
+            <input type="date" class="form-control" id="exam_date" name="exam_date">
+          </div>
+          
+          <button type="submit" class="btn btn-royal w-100">
+            <i class="fas fa-plus me-2"></i>Add Subject
+          </button>
+        </form>
+        {% else %}
+        <div class="text-center text-muted py-3">
+          <i class="fas fa-check-circle fa-2x mb-2"></i>
+          <p class="mb-0">All available courses have been added</p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="card mt-3">
+      <div class="card-header">
+        <i class="fas fa-link"></i>Quick Links
+      </div>
+      <div class="card-body">
+        <div class="d-grid gap-2">
+          <a href="{% url 'adminpanel:results_entry' exam.pk %}" class="btn btn-outline-success">
+            <i class="fas fa-poll me-2"></i>Enter Results
+          </a>
+          <a href="{% url 'adminpanel:question_paper_add' %}" class="btn btn-outline-primary">
+            <i class="fas fa-file-upload me-2"></i>Upload Question Paper
+          </a>
+          <a href="{% url 'adminpanel:exams' %}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Back to Exams
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

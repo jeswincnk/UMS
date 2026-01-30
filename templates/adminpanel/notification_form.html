@@ -1,0 +1,103 @@
+{% extends 'adminpanel/base.html' %}
+
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">
+    <i class="fas fa-{% if notification %}edit{% else %}plus{% endif %}"></i>
+    {% if notification %}Edit Notification{% else %}Add Notification{% endif %}
+  </h1>
+  <p class="page-subtitle">
+    {% if notification %}Update university exam notification{% else %}Create a new university-wide exam notification{% endif %}
+  </p>
+</div>
+
+<div class="row">
+  <div class="col-lg-8">
+    <div class="card">
+      <div class="card-header">
+        <i class="fas fa-bell"></i>Notification Details
+      </div>
+      <div class="card-body">
+        <form method="post">
+          {% csrf_token %}
+          
+          <div class="mb-3">
+            <label for="title" class="form-label">Title <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="title" name="title" 
+                   value="{{ notification.title|default:'' }}" required
+                   placeholder="e.g., End Semester Examination Schedule">
+          </div>
+          
+          <div class="mb-3">
+            <label for="content" class="form-label">Content <span class="text-danger">*</span></label>
+            <textarea class="form-control" id="content" name="content" rows="5" required
+                      placeholder="Enter the detailed notification content...">{{ notification.content|default:'' }}</textarea>
+          </div>
+          
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="priority" class="form-label">Priority</label>
+              <select class="form-select" id="priority" name="priority">
+                <option value="normal" {% if notification.priority == 'normal' %}selected{% endif %}>Normal</option>
+                <option value="important" {% if notification.priority == 'important' %}selected{% endif %}>Important</option>
+                <option value="urgent" {% if notification.priority == 'urgent' %}selected{% endif %}>Urgent</option>
+              </select>
+            </div>
+            
+            <div class="col-md-6 mb-3">
+              <label for="exam_date" class="form-label">Exam Date</label>
+              <input type="date" class="form-control" id="exam_date" name="exam_date"
+                     value="{{ notification.exam_date|date:'Y-m-d'|default:'' }}">
+              <small class="text-muted">Optional - if applicable</small>
+            </div>
+          </div>
+          
+          {% if notification %}
+          <div class="mb-3">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="is_active" name="is_active"
+                     {% if notification.is_active %}checked{% endif %}>
+              <label class="form-check-label" for="is_active">Active</label>
+              <small class="text-muted d-block">Uncheck to hide this notification</small>
+            </div>
+          </div>
+          {% endif %}
+          
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-royal">
+              <i class="fas fa-save me-2"></i>{% if notification %}Update{% else %}Create{% endif %} Notification
+            </button>
+            <a href="{% url 'adminpanel:notifications' %}" class="btn btn-outline-secondary">
+              <i class="fas fa-times me-2"></i>Cancel
+            </a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-lg-4">
+    <div class="card">
+      <div class="card-header">
+        <i class="fas fa-info-circle"></i>Information
+      </div>
+      <div class="card-body">
+        <p class="mb-3">
+          <strong>University notifications</strong> are visible to all users across all colleges including:
+        </p>
+        <ul class="mb-3">
+          <li>Principals</li>
+          <li>College Administrators</li>
+          <li>HODs</li>
+          <li>Faculty Members</li>
+          <li>Students</li>
+        </ul>
+        <p class="mb-0 text-muted">
+          <i class="fas fa-lightbulb me-1"></i>
+          Use urgent priority for time-sensitive announcements.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

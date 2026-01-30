@@ -1,0 +1,133 @@
+{% extends "public/base.html" %}
+{% block title %}Welcome - University Management System{% endblock %}
+{% block content %}
+<!-- Hero Section -->
+<section class="hero" style="margin-top: 76px;">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-7">
+        <h1>Welcome to the Future of Education</h1>
+        <p>Discover excellence in education with our comprehensive University Management System. Empowering students, faculty, and administrators with cutting-edge technology.</p>
+        <div class="d-flex flex-wrap">
+          <a href="{% url 'public:courses' %}" class="btn-hero">Explore Courses</a>
+          <a href="{% url 'public:about' %}" class="btn-hero-outline">Learn More</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Features Section -->
+<section class="section">
+  <div class="container">
+    <h2 class="section-title">Why Choose <span>Us?</span></h2>
+    <p class="section-subtitle">We provide comprehensive solutions for modern educational institutions with state-of-the-art technology.</p>
+    
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-graduation-cap"></i>
+          </div>
+          <h4>Quality Education</h4>
+          <p>World-class curriculum designed by industry experts and experienced academicians to prepare students for the future.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-users"></i>
+          </div>
+          <h4>Expert Faculty</h4>
+          <p>Learn from distinguished professors and industry professionals with years of teaching and practical experience.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-laptop-code"></i>
+          </div>
+          <h4>Modern Facilities</h4>
+          <p>Access state-of-the-art laboratories, libraries, and online resources to enhance your learning experience.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-globe"></i>
+          </div>
+          <h4>Global Network</h4>
+          <p>Join a worldwide community of alumni and partners spanning across various industries and countries.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-certificate"></i>
+          </div>
+          <h4>Accredited Programs</h4>
+          <p>All our programs are fully accredited and recognized by leading educational bodies worldwide.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-hands-helping"></i>
+          </div>
+          <h4>Career Support</h4>
+          <p>Comprehensive career services including internships, job placements, and professional development.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-3 col-6">
+        <div class="stat-item">
+          <span class="stat-number">5000+</span>
+          <span class="stat-label">Students</span>
+        </div>
+      </div>
+      <div class="col-md-3 col-6">
+        <div class="stat-item">
+          <span class="stat-number">200+</span>
+          <span class="stat-label">Courses</span>
+        </div>
+      </div>
+      <div class="col-md-3 col-6">
+        <div class="stat-item">
+          <span class="stat-number">150+</span>
+          <span class="stat-label">Faculty Members</span>
+        </div>
+      </div>
+      <div class="col-md-3 col-6">
+        <div class="stat-item">
+          <span class="stat-number">95%</span>
+          <span class="stat-label">Placement Rate</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA Section -->
+<section class="section section-light">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-8">
+        <h2 style="font-size: 2rem; margin-bottom: 1rem;">Ready to Start Your Journey?</h2>
+        <p class="text-muted mb-0">Join thousands of students who have transformed their careers with us.</p>
+      </div>
+      <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
+        <a href="{% url 'public:contact' %}" class="btn-hero" style="background: var(--royal-red); color: white;">
+          Get in Touch <i class="fas fa-arrow-right ms-2"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

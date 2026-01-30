@@ -1,0 +1,122 @@
+{% extends 'adminpanel/base.html' %}
+
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-center">
+  <div>
+    <h1 class="page-title"><i class="fas fa-file-pdf"></i>Question Papers</h1>
+    <p class="page-subtitle">Upload and manage question papers for university exams</p>
+  </div>
+  <a href="{% url 'adminpanel:question_paper_add' %}" class="btn btn-royal">
+    <i class="fas fa-upload me-2"></i>Upload Paper
+  </a>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <i class="fas fa-list"></i>All Question Papers
+  </div>
+  <div class="card-body p-0">
+    {% if papers %}
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Exam / Subject</th>
+            <th>Release Date</th>
+            <th>Status</th>
+            <th>Downloads</th>
+            <th class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for paper in papers %}
+          <tr>
+            <td>
+              <div class="fw-semibold">{{ paper.title }}</div>
+              <small class="text-muted">Uploaded {{ paper.uploaded_at|date:"M d, Y" }}</small>
+            </td>
+            <td>
+              <div>{{ paper.exam_subject.exam.name }}</div>
+              <small class="text-muted">{{ paper.exam_subject.course.code }} - {{ paper.exam_subject.course.title|truncatechars:30 }}</small>
+            </td>
+            <td>
+              {{ paper.release_datetime|date:"M d, Y H:i" }}
+            </td>
+            <td>
+              {% if paper.status == 'released' %}
+                <span class="badge bg-success">Released</span>
+              {% elif paper.status == 'scheduled' %}
+                <span class="badge bg-warning text-dark">Scheduled</span>
+              {% else %}
+                <span class="badge bg-secondary">Draft</span>
+              {% endif %}
+            </td>
+            <td>
+              <span class="badge bg-info">{{ paper.download_count }}</span>
+            </td>
+            <td class="text-end">
+              <a href="{{ paper.paper_file.url }}" class="btn btn-sm btn-outline-success" target="_blank" title="Download">
+                <i class="fas fa-download"></i>
+              </a>
+              {% if paper.status != 'released' %}
+              <form method="post" action="{% url 'adminpanel:question_paper_release' paper.pk %}" class="d-inline">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm btn-outline-warning" title="Release Now"
+                        onclick="return confirm('Release this paper to all colleges now?')">
+                  <i class="fas fa-paper-plane"></i>
+                </button>
+              </form>
+              {% endif %}
+              <a href="{% url 'adminpanel:question_paper_edit' paper.pk %}" class="btn btn-sm btn-outline-primary" title="Edit">
+                <i class="fas fa-edit"></i>
+              </a>
+              <a href="{% url 'adminpanel:question_paper_delete' paper.pk %}" class="btn btn-sm btn-outline-danger" title="Delete">
+                <i class="fas fa-trash"></i>
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    
+    {% if papers.has_other_pages %}
+    <div class="card-footer">
+      <nav>
+        <ul class="pagination justify-content-center mb-0">
+          {% if papers.has_previous %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ papers.previous_page_number }}">Previous</a>
+            </li>
+          {% endif %}
+          
+          {% for num in papers.paginator.page_range %}
+            {% if papers.number == num %}
+              <li class="page-item active"><a class="page-link" href="#">{{ num }}</a></li>
+            {% elif num > papers.number|add:'-3' and num < papers.number|add:'3' %}
+              <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+            {% endif %}
+          {% endfor %}
+          
+          {% if papers.has_next %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ papers.next_page_number }}">Next</a>
+            </li>
+          {% endif %}
+        </ul>
+      </nav>
+    </div>
+    {% endif %}
+    {% else %}
+    <div class="text-center py-5">
+      <i class="fas fa-file-pdf fa-3x text-muted mb-3"></i>
+      <p class="text-muted">No question papers uploaded</p>
+      <a href="{% url 'adminpanel:question_paper_add' %}" class="btn btn-royal">
+        <i class="fas fa-upload me-2"></i>Upload First Paper
+      </a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

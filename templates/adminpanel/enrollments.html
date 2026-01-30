@@ -1,0 +1,101 @@
+{% extends "adminpanel/base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div class="page-header mb-0">
+    <h1 class="page-title mb-0"><i class="fas fa-clipboard-list"></i>Enrollments</h1>
+    <p class="page-subtitle mb-0">View all course enrollments</p>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead>
+          <tr>
+            <th>Student</th>
+            <th>Student ID</th>
+            <th>Course</th>
+            <th>Term</th>
+            <th>Enrollment Date</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for enrollment in enrollments %}
+          <tr>
+            <td>
+              <div class="d-flex align-items-center">
+                <div class="avatar-circle me-3">
+                  {{ enrollment.student.user.first_name|slice:":1"|upper|default:"S" }}
+                </div>
+                <strong>{{ enrollment.student.user.get_full_name|default:enrollment.student.user.email }}</strong>
+              </div>
+            </td>
+            <td><span class="badge bg-royal-light text-royal">{{ enrollment.student.student_id }}</span></td>
+            <td>
+              <strong>{{ enrollment.offering.course.code }}</strong><br>
+              <small class="text-muted">{{ enrollment.offering.course.title }}</small>
+            </td>
+            <td>{{ enrollment.offering.term }} {{ enrollment.offering.year }}</td>
+            <td>{{ enrollment.enrolled_at|date:"M d, Y" }}</td>
+            <td>
+              {% if enrollment.status == 'enrolled' %}
+              <span class="badge bg-success">Enrolled</span>
+              {% elif enrollment.status == 'completed' %}
+              <span class="badge bg-primary">Completed</span>
+              {% elif enrollment.status == 'dropped' %}
+              <span class="badge bg-warning text-dark">Dropped</span>
+              {% else %}
+              <span class="badge bg-secondary">{{ enrollment.status|default:'Pending' }}</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="6" class="text-center py-5 text-muted">
+              <i class="fas fa-clipboard-list fa-3x mb-3 d-block"></i>
+              No enrollments found.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+{% if enrollments.has_other_pages %}
+<nav class="mt-4">
+  <ul class="pagination justify-content-center">
+    {% if enrollments.has_previous %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ enrollments.previous_page_number }}">
+          <i class="fas fa-chevron-left me-1"></i>Previous
+        </a>
+      </li>
+    {% else %}
+      <li class="page-item disabled"><span class="page-link"><i class="fas fa-chevron-left me-1"></i>Previous</span></li>
+    {% endif %}
+
+    {% for num in enrollments.paginator.page_range %}
+      {% if num == enrollments.number %}
+        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+      {% else %}
+        <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+      {% endif %}
+    {% endfor %}
+
+    {% if enrollments.has_next %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ enrollments.next_page_number }}">
+          Next<i class="fas fa-chevron-right ms-1"></i>
+        </a>
+      </li>
+    {% else %}
+      <li class="page-item disabled"><span class="page-link">Next<i class="fas fa-chevron-right ms-1"></i></span></li>
+    {% endif %}
+  </ul>
+</nav>
+{% endif %}
+{% endblock %}

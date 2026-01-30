@@ -1,0 +1,72 @@
+{% extends "adminpanel/base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div class="page-header mb-0">
+    <h1 class="page-title mb-0"><i class="fas fa-chalkboard-teacher"></i>Faculty</h1>
+    <p class="page-subtitle mb-0">Manage faculty members</p>
+  </div>
+  <a href="{% url 'adminpanel:faculty_add' %}" class="btn btn-royal">
+    <i class="fas fa-plus me-2"></i>Add Faculty
+  </a>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Faculty ID</th>
+            <th>Email</th>
+            <th>Department</th>
+            <th>Qualification</th>
+            <th class="text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for fac in faculty_list %}
+          <tr>
+            <td>
+              <div class="d-flex align-items-center">
+                <div class="avatar-circle me-3">
+                  {{ fac.user.first_name|slice:":1"|upper|default:"F" }}
+                </div>
+                <div>
+                  <strong>{{ fac.user.get_full_name|default:fac.user.email }}</strong>
+                </div>
+              </div>
+            </td>
+            <td><span class="badge bg-royal-light text-royal">{{ fac.faculty_id }}</span></td>
+            <td>{{ fac.user.email }}</td>
+            <td>
+              {% for dept in fac.departments.all %}
+                <span class="badge bg-secondary">{{ dept.name }}</span>
+              {% empty %}
+                <span class="text-muted">Not Assigned</span>
+              {% endfor %}
+            </td>
+            <td>{{ fac.qualification|default:'—' }}</td>
+            <td class="text-center">
+              <a href="{% url 'adminpanel:faculty_edit' fac.id %}" class="btn btn-sm btn-outline-primary me-1" title="Edit">
+                <i class="fas fa-edit"></i>
+              </a>
+              <a href="{% url 'adminpanel:faculty_delete' fac.id %}" class="btn btn-sm btn-outline-danger" title="Delete">
+                <i class="fas fa-trash"></i>
+              </a>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="6" class="text-center py-5 text-muted">
+              <i class="fas fa-chalkboard-teacher fa-3x mb-3 d-block"></i>
+              No faculty found. <a href="{% url 'adminpanel:faculty_add' %}">Add one now</a>.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

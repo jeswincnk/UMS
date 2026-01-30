@@ -1,0 +1,109 @@
+{% extends 'public/college/base.html' %}
+
+{% block title %}{{ student.user.get_full_name }} - Student Details{% endblock %}
+
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-center">
+  <div>
+    <h1 class="page-title"><i class="fas fa-user-graduate"></i>Student Details</h1>
+    <p class="page-subtitle">View student information</p>
+  </div>
+  <div>
+    <a href="{% url 'public:college_edit_student' student.pk %}" class="btn btn-royal me-2">
+      <i class="fas fa-edit me-2"></i>Edit Student
+    </a>
+    <a href="{% url 'public:college_students' %}" class="btn btn-outline-secondary">
+      <i class="fas fa-arrow-left me-2"></i>Back to Students
+    </a>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-lg-4">
+    <div class="card">
+      <div class="card-body text-center py-5">
+        <div class="user-avatar mx-auto mb-3" style="width: 100px; height: 100px; font-size: 2.5rem;">
+          {{ student.user.first_name|slice:":1"|upper }}{{ student.user.last_name|slice:":1"|upper }}
+        </div>
+        <h4 class="mb-1">{{ student.user.get_full_name }}</h4>
+        <p class="text-muted mb-2">{{ student.user.email }}</p>
+        {% if student.student_id %}
+        <span class="badge bg-primary">{{ student.student_id }}</span>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-lg-8">
+    <div class="card">
+      <div class="card-header">
+        <i class="fas fa-info-circle"></i>Personal Information
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label text-muted small">First Name</label>
+            <p class="mb-0 fw-medium">{{ student.user.first_name|default:"-" }}</p>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label text-muted small">Last Name</label>
+            <p class="mb-0 fw-medium">{{ student.user.last_name|default:"-" }}</p>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label text-muted small">Email</label>
+            <p class="mb-0 fw-medium">{{ student.user.email }}</p>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label text-muted small">Phone</label>
+            <p class="mb-0 fw-medium">{{ student.phone|default:"-" }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="card mt-4">
+      <div class="card-header">
+        <i class="fas fa-graduation-cap"></i>Academic Information
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label text-muted small">Department</label>
+            <p class="mb-0 fw-medium">{{ student.department.name|default:"-" }}</p>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label text-muted small">Program</label>
+            <p class="mb-0 fw-medium">{{ student.program.name|default:"-" }}</p>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label text-muted small">Roll Number</label>
+            <p class="mb-0 fw-medium"><code>{{ student.roll_number|default:"-" }}</code></p>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label text-muted small">Admission Date</label>
+            <p class="mb-0 fw-medium">{{ student.admission_date|date:"F d, Y"|default:"-" }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="card mt-4">
+      <div class="card-header">
+        <i class="fas fa-university"></i>College Information
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label text-muted small">College</label>
+            <p class="mb-0 fw-medium">{{ college.name }}</p>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label text-muted small">College Code</label>
+            <p class="mb-0 fw-medium"><code>{{ college.code }}</code></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

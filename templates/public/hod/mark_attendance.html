@@ -1,0 +1,141 @@
+{% extends 'public/hod/base.html' %}
+{% load custom_filters %}
+
+{% block title %}Mark Attendance - HOD Portal{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title"><i class="fas fa-user-check"></i> Mark Attendance</h1>
+  <p class="page-subtitle">{{ session.subject.code }} - {{ session.subject.title }} | {{ session.date|date:"F d, Y" }}</p>
+</div>
+
+<div class="card mb-4">
+  <div class="card-header bg-warning text-dark">
+    <div class="d-flex justify-content-between align-items-center">
+      <div>
+        <i class="fas fa-info-circle me-2"></i>Session Info
+      </div>
+      <div>
+        <span class="badge bg-dark">{{ session.department.name }}</span>
+        <span class="badge bg-secondary">Semester {{ session.semester }}</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<form method="post">
+  {% csrf_token %}
+  <div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <span><i class="fas fa-users me-2"></i>Students ({{ students|length }})</span>
+      <div class="btn-group" role="group">
+        <button type="button" class="btn btn-sm btn-success" onclick="markAll('present')">
+          <i class="fas fa-check-double me-1"></i>All Present
+        </button>
+        <button type="button" class="btn btn-sm btn-danger" onclick="markAll('absent')">
+          <i class="fas fa-times me-1"></i>All Absent
+        </button>
+      </div>
+    </div>
+    <div class="card-body">
+      {% if students %}
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead>
+            <tr>
+              <th width="50">#</th>
+              <th>Student</th>
+              <th>Roll Number</th>
+              <th width="300">Status</th>
+              <th>Remarks</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for student in students %}
+            {% with current_status=existing_attendance|get_item:student.pk %}
+            <tr>
+              <td>{{ forloop.counter }}</td>
+              <td>
+                <div class="d-flex align-items-center">
+                  <div class="avatar-circle bg-warning text-dark me-2">
+                    {{ student.user.first_name|slice:":1"|upper }}{{ student.user.last_name|slice:":1"|upper }}
+                  </div>
+                  <div>
+                    <strong>{{ student.user.get_full_name }}</strong>
+                    <br><small class="text-muted">{{ student.user.email }}</small>
+                  </div>
+                </div>
+              </td>
+              <td><span class="badge bg-light text-dark">{{ student.roll_number|default:"-" }}</span></td>
+              <td>
+                <div class="btn-group w-100" role="group">
+                  <input type="radio" class="btn-check" name="status_{{ student.pk }}" id="present_{{ student.pk }}" 
+                         value="present" {% if current_status.status == 'present' or not current_status %}checked{% endif %}>
+                  <label class="btn btn-outline-success" for="present_{{ student.pk }}">
+                    <i class="fas fa-check"></i> Present
+                  </label>
+                  
+                  <input type="radio" class="btn-check" name="status_{{ student.pk }}" id="absent_{{ student.pk }}" 
+                         value="absent" {% if current_status.status == 'absent' %}checked{% endif %}>
+                  <label class="btn btn-outline-danger" for="absent_{{ student.pk }}">
+                    <i class="fas fa-times"></i> Absent
+                  </label>
+                  
+                  <input type="radio" class="btn-check" name="status_{{ student.pk }}" id="leave_{{ student.pk }}" 
+                         value="leave" {% if current_status.status == 'leave' %}checked{% endif %}>
+                  <label class="btn btn-outline-warning" for="leave_{{ student.pk }}">
+                    <i class="fas fa-plane"></i> Leave
+                  </label>
+                </div>
+              </td>
+              <td>
+                <input type="text" name="remarks_{{ student.pk }}" class="form-control form-control-sm" 
+                       placeholder="Optional remarks" value="{{ current_status.remarks|default:'' }}">
+              </td>
+            </tr>
+            {% endwith %}
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      
+      <div class="d-flex justify-content-between mt-4">
+        <a href="{% url 'public:hod_attendance' %}" class="btn btn-outline-secondary">
+          <i class="fas fa-arrow-left me-2"></i>Back
+        </a>
+        <button type="submit" class="btn btn-warning btn-lg">
+          <i class="fas fa-save me-2"></i>Save Attendance
+        </button>
+      </div>
+      {% else %}
+      <div class="text-center py-5">
+        <i class="fas fa-users-slash fa-3x text-muted mb-3"></i>
+        <h5 class="text-muted">No Students Found</h5>
+        <p class="text-muted">No students enrolled in this department/program.</p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</form>
+
+<style>
+.avatar-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 14px;
+}
+</style>
+
+<script>
+function markAll(status) {
+  document.querySelectorAll(`input[value="${status}"]`).forEach(radio => {
+    radio.checked = true;
+  });
+}
+</script>
+{% endblock %}

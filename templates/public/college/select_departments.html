@@ -1,0 +1,57 @@
+{% extends 'public/college/base.html' %}
+
+{% block title %}Select Programs - College Portal{% endblock %}
+
+{% block content %}
+
+<div class="page-header text-center mb-5">
+    <h1 class="page-title"><i class="fas fa-graduation-cap"></i>Departments & Programs</h1>
+    <p class="page-subtitle">Select the programs you want to affiliate with. Departments are shown for clarity.</p>
+</div>
+
+{% if college.affiliation_status == 'approved' %}
+<div class="alert alert-success" style="background: #fff0f0; color: #c00; border-color: #c00;">
+  <i class="fas fa-check-circle me-2"></i>
+  <strong>Your affiliation has been approved!</strong> Your college is now affiliated with the university for the selected programs.
+</div>
+{% elif college.affiliation_status == 'pending' %}
+<div class="alert alert-warning" style="background: #fff0f0; color: #c00; border-color: #c00;">
+  <i class="fas fa-clock me-2"></i>
+  <strong>Affiliation Pending:</strong> Your affiliation request is currently under review. You cannot modify your program selection at this time.
+</div>
+{% endif %}
+
+<form method="post">
+    {% csrf_token %}
+    <div class="row g-4 justify-content-center">
+        {% for department in departments %}
+            <div class="col-md-6 col-lg-4 d-flex align-items-stretch">
+                <div class="card department-card w-100 mb-4">
+                    <div class="card-header text-center">
+                        <h6 class="mb-0" style="font-family: 'Playfair Display', serif; font-weight: 100;color: #c00; text-transform: uppercase; letter-spacing: 1px;">{{ department.department.name }}</h6>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                        {% for program in department.programs.all %}
+                            <li class="list-group-item">
+                                <label class="form-check-label">
+                                    <input type="checkbox" class="form-check-input me-2" name="programs" value="{{ program.id }}" {% if program.id in affiliated_program_ids %}checked{% endif %} {% if college.affiliation_status != 'not_applied' %}disabled{% endif %}>
+                                    {{ program.name }}
+                                </label>
+                            </li>
+                        {% empty %}
+                            <li class="list-group-item text-muted">No programs available.</li>
+                        {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    <div class="mt-4 text-center">
+        <button type="submit" class="btn btn-royal px-4 py-2" {% if college.affiliation_status != 'not_applied' %}disabled{% endif %}>Save Selection</button>
+    </div>
+</form>
+{% endblock %}
+
+

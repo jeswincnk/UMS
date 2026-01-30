@@ -1,0 +1,176 @@
+{% extends "public/base.html" %}
+{% block title %}Register Your College - UMS{% endblock %}
+{% block content %}
+
+<!-- Hero Section -->
+<section class="hero" style="padding: 60px 0;">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-8 mx-auto text-center">
+        <h1>Register Your College</h1>
+        <p>Join the University Management System and get affiliated with our university</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Registration Form Section -->
+<section class="section">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+          {% if message.tags == 'success' %}
+          <i class="fas fa-check-circle me-2"></i>
+          {% else %}
+          <i class="fas fa-exclamation-circle me-2"></i>
+          {% endif %}
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+        {% endif %}
+        
+        <div class="card shadow-lg border-0" style="border-radius: 15px;">
+          <div class="card-header text-center py-4" style="background: linear-gradient(135deg, var(--royal-red), var(--deep-red)); border-radius: 15px 15px 0 0;">
+            <h3 class="text-white mb-0"><i class="fas fa-university me-2"></i>College Registration</h3>
+            <p class="text-white-50 mb-0 mt-2">Fill out the form below to register your college</p>
+          </div>
+          <div class="card-body p-4 p-lg-5">
+            
+            <!-- Registration Process Info -->
+            <div class="alert alert-info mb-4">
+              <h6 class="alert-heading"><i class="fas fa-info-circle me-2"></i>Registration Process</h6>
+              <ol class="mb-0 ps-3">
+                <li><strong>Register:</strong> Fill out this form with your college details</li>
+                <li><strong>Approval:</strong> University admin will review and approve your registration</li>
+                <li><strong>Select Departments:</strong> After approval, login and select departments for affiliation</li>
+                <li><strong>Affiliation:</strong> University approves your department affiliations</li>
+                <li><strong>Enroll Students:</strong> Start enrolling students in your affiliated programs</li>
+              </ol>
+            </div>
+            
+            <form method="post">
+              {% csrf_token %}
+              
+              <!-- College Information -->
+              <h5 class="mb-3" style="color: var(--royal-red);"><i class="fas fa-building me-2"></i>College Information</h5>
+              
+              <div class="row">
+                <div class="col-md-8 mb-3">
+                  <label class="form-label">College Name <span class="text-danger">*</span></label>
+                  <input type="text" name="college_name" class="form-control form-control-lg" required 
+                         placeholder="e.g., ABC College of Arts and Science" value="{{ request.POST.college_name }}">
+                </div>
+                <div class="col-md-4 mb-3">
+                  <label class="form-label">College Code <span class="text-danger">*</span></label>
+                  <input type="text" name="college_code" class="form-control form-control-lg text-uppercase" required 
+                         placeholder="e.g., ABC" maxlength="20" value="{{ request.POST.college_code }}">
+                  <small class="form-text text-muted">Unique identifier (max 20 chars)</small>
+                </div>
+              </div>
+              
+              <div class="mb-3">
+                <label class="form-label">Address</label>
+                <textarea name="address" class="form-control" rows="3" 
+                          placeholder="Full address of your college">{{ request.POST.address }}</textarea>
+              </div>
+              
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Phone Number</label>
+                  <input type="tel" name="phone" class="form-control" 
+                         placeholder="e.g., +91 98765 43210" value="{{ request.POST.phone }}">
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Established Year</label>
+                  <input type="number" name="established_year" class="form-control" 
+                         placeholder="e.g., 1990" min="1800" max="2030" value="{{ request.POST.established_year }}">
+                </div>
+              </div>
+              
+              <hr class="my-4">
+              
+              <!-- Account Information -->
+              <h5 class="mb-3" style="color: var(--royal-red);"><i class="fas fa-user-circle me-2"></i>Account Information</h5>
+              
+              <div class="mb-3">
+                <label class="form-label">Email Address <span class="text-danger">*</span></label>
+                <input type="email" name="email" class="form-control form-control-lg" required 
+                       placeholder="college@example.com" value="{{ request.POST.email }}">
+                <small class="form-text text-muted">This will be your login email</small>
+              </div>
+              
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Password <span class="text-danger">*</span></label>
+                  <input type="password" name="password" class="form-control form-control-lg" required 
+                         placeholder="Minimum 8 characters" minlength="8">
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Confirm Password <span class="text-danger">*</span></label>
+                  <input type="password" name="confirm_password" class="form-control form-control-lg" required 
+                         placeholder="Confirm your password" minlength="8">
+                </div>
+              </div>
+              
+              <hr class="my-4">
+              
+              <!-- Terms -->
+              <div class="form-check mb-4">
+                <input class="form-check-input" type="checkbox" id="terms" required>
+                <label class="form-check-label" for="terms">
+                  I agree to the <a href="#" style="color: var(--royal-red);">Terms and Conditions</a> and confirm that the information provided is accurate.
+                </label>
+              </div>
+              
+              <!-- Submit Button -->
+              <div class="d-grid">
+                <button type="submit" class="btn btn-lg text-white" style="background: linear-gradient(135deg, var(--royal-red), var(--deep-red));">
+                  <i class="fas fa-paper-plane me-2"></i>Submit Registration
+                </button>
+              </div>
+              
+              <div class="text-center mt-4">
+                <p class="text-muted mb-0">
+                  Already registered? <a href="{% url 'login' %}" style="color: var(--royal-red); font-weight: 600;">Login here</a>
+                </p>
+              </div>
+            </form>
+          </div>
+        </div>
+        
+        <!-- Additional Info -->
+        <div class="row mt-5">
+          <div class="col-md-4 text-center mb-4">
+            <div class="p-3">
+              <i class="fas fa-clock fa-3x mb-3" style="color: var(--royal-red);"></i>
+              <h5>Quick Review</h5>
+              <p class="text-muted">Applications are typically reviewed within 3-5 business days</p>
+            </div>
+          </div>
+          <div class="col-md-4 text-center mb-4">
+            <div class="p-3">
+              <i class="fas fa-shield-alt fa-3x mb-3" style="color: var(--royal-red);"></i>
+              <h5>Secure Process</h5>
+              <p class="text-muted">Your data is protected with industry-standard security</p>
+            </div>
+          </div>
+          <div class="col-md-4 text-center mb-4">
+            <div class="p-3">
+              <i class="fas fa-headset fa-3x mb-3" style="color: var(--royal-red);"></i>
+              <h5>Support Available</h5>
+              <p class="text-muted">Contact us if you need any assistance with registration</p>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

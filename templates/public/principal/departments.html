@@ -1,0 +1,64 @@
+{% extends 'public/principal/base.html' %}
+
+{% block title %}Departments - Principal Portal{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title"><i class="fas fa-building"></i>Departments</h1>
+  <p class="page-subtitle">All departments in {{ college.name }}</p>
+</div>
+
+<div class="row g-4">
+  {% for data in dept_data %}
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="fas fa-university"></i>{{ data.department.name }}</span>
+        <span class="badge bg-secondary">{{ data.department.code }}</span>
+      </div>
+      <div class="card-body">
+        <div class="row text-center mb-3">
+          <div class="col-6">
+            <div class="p-3 bg-light rounded">
+              <h4 class="mb-0">{{ data.faculty_count }}</h4>
+              <small class="text-muted">Faculty</small>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="p-3 bg-light rounded">
+              <h4 class="mb-0">{{ data.student_count }}</h4>
+              <small class="text-muted">Students</small>
+            </div>
+          </div>
+        </div>
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <small class="text-muted">Head of Department:</small><br>
+            {% if data.hod %}
+            <strong>{{ data.hod.user.get_full_name }}</strong>
+            {% else %}
+            <span class="text-muted">Not assigned</span>
+            {% endif %}
+          </div>
+          {% if data.hod %}
+          <span class="badge bg-warning text-dark">HOD Assigned</span>
+          {% else %}
+          <span class="badge bg-secondary">No HOD</span>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body text-center py-5">
+        <i class="fas fa-building fa-3x text-muted mb-3"></i>
+        <h5 class="text-muted">No Departments</h5>
+        <p class="text-muted">No departments affiliated with this college yet.</p>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

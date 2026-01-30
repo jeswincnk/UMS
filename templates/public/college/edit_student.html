@@ -1,0 +1,177 @@
+{% extends 'public/college/base.html' %}
+
+{% block title %}Edit Student - {{ student.user.get_full_name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title"><i class="fas fa-user-edit"></i>Edit Student</h1>
+  <p class="page-subtitle">Update student information</p>
+</div>
+
+<div class="row">
+  <div class="col-lg-8">
+    <div class="card">
+      <div class="card-header">
+        <i class="fas fa-user"></i>Student Information
+      </div>
+      <div class="card-body">
+        <form method="post">
+          {% csrf_token %}
+          
+          <h6 class="text-muted mb-3 border-bottom pb-2">Personal Details</h6>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">First Name *</label>
+              <input type="text" name="first_name" class="form-control" required 
+                     value="{{ student.user.first_name }}" placeholder="Enter first name">
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Last Name *</label>
+              <input type="text" name="last_name" class="form-control" required 
+                     value="{{ student.user.last_name }}" placeholder="Enter last name">
+            </div>
+          </div>
+          
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Email</label>
+              <input type="email" class="form-control" value="{{ student.user.email }}" disabled>
+              <small class="text-muted">Email cannot be changed</small>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Phone</label>
+              <input type="text" name="phone" class="form-control" 
+                     value="{{ student.phone }}" placeholder="+91 9876543210">
+            </div>
+          </div>
+          
+          <h6 class="text-muted mb-3 border-bottom pb-2 mt-4">Academic Details</h6>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Department *</label>
+              <select name="department" class="form-select" required id="departmentSelect">
+                <option value="">Select Department</option>
+                {% for dept in departments %}
+                <option value="{{ dept.department.id }}" {% if student.department_id == dept.department.id %}selected{% endif %}>
+                  {{ dept.department.name }}
+                </option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Program *</label>
+              <select name="program" class="form-select" required id="programSelect">
+                <option value="">Select Program</option>
+              </select>
+            </div>
+          </div>
+          <!-- Affiliated programs data from server -->
+          <script type="application/json" id="deptProgramsData">{{ dept_programs_json|safe }}</script>
+          <!-- Current student's program for pre-selection -->
+          <script type="application/json" id="currentProgram">{"id": {{ student.program_id|default:"null" }}, "dept_id": {{ student.department_id|default:"null" }}}</script>
+          
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Roll Number</label>
+              <input type="text" name="roll_number" class="form-control" 
+                     value="{{ student.roll_number }}" placeholder="e.g., 2024001">
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Admission Date</label>
+              <input type="date" name="admission_date" class="form-control" 
+                     value="{{ student.admission_date|date:'Y-m-d' }}">
+            </div>
+          </div>
+          
+          <div class="d-flex gap-2 mt-4">
+            <button type="submit" class="btn btn-royal">
+              <i class="fas fa-save me-2"></i>Save Changes
+            </button>
+            <a href="{% url 'public:college_view_student' student.pk %}" class="btn btn-outline-secondary">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-lg-4">
+    <div class="card">
+      <div class="card-body text-center py-4">
+        <div class="user-avatar mx-auto mb-3" style="width: 80px; height: 80px; font-size: 2rem;">
+          {{ student.user.first_name|slice:":1"|upper }}{{ student.user.last_name|slice:":1"|upper }}
+        </div>
+        <h5 class="mb-1">{{ student.user.get_full_name }}</h5>
+        <p class="text-muted mb-2">{{ student.user.email }}</p>
+        {% if student.student_id %}
+        <span class="badge bg-primary">{{ student.student_id }}</span>
+        {% endif %}
+      </div>
+    </div>
+    
+    <div class="card mt-4">
+      <div class="card-header">
+        <i class="fas fa-info-circle"></i>Information
+      </div>
+      <div class="card-body">
+        <ul class="list-unstyled mb-0">
+          <li class="mb-2">
+            <i class="fas fa-check text-success me-2"></i>
+            Email address cannot be changed
+          </li>
+          <li class="mb-2">
+            <i class="fas fa-check text-success me-2"></i>
+            Student can only be assigned to affiliated programs
+          </li>
+          <li class="mb-2">
+            <i class="fas fa-check text-success me-2"></i>
+            Roll number should follow your college format
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const deptSelect = document.getElementById('departmentSelect');
+  const programSelect = document.getElementById('programSelect');
+  
+  // Load affiliated programs data from the JSON script tag
+  const deptProgramsData = JSON.parse(document.getElementById('deptProgramsData').textContent || '{}');
+  const currentProgram = JSON.parse(document.getElementById('currentProgram').textContent || '{}');
+  
+  function populatePrograms(deptId, selectedProgramId) {
+    const programs = deptProgramsData[deptId] || [];
+    
+    programSelect.innerHTML = '<option value="">Select Program</option>';
+    
+    if (programs.length > 0) {
+      programs.forEach(function(prog) {
+        const option = document.createElement('option');
+        option.value = prog.id;
+        option.textContent = prog.name;
+        if (selectedProgramId && prog.id == selectedProgramId) {
+          option.selected = true;
+        }
+        programSelect.appendChild(option);
+      });
+      programSelect.disabled = false;
+    } else {
+      programSelect.innerHTML = '<option value="">No programs available</option>';
+      programSelect.disabled = true;
+    }
+  }
+  
+  // Initialize with current student's department and program
+  if (currentProgram.dept_id) {
+    populatePrograms(currentProgram.dept_id, currentProgram.id);
+  }
+  
+  deptSelect.addEventListener('change', function() {
+    const deptId = this.value;
+    populatePrograms(deptId, null);
+  });
+});
+</script>
+{% endblock %}

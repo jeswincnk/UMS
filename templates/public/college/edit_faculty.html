@@ -1,0 +1,150 @@
+{% extends 'public/college/base.html' %}
+
+{% block title %}Edit Faculty - {{ faculty.user.get_full_name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title"><i class="fas fa-user-edit"></i>Edit Faculty</h1>
+  <p class="page-subtitle">Update faculty member information</p>
+</div>
+
+<div class="row">
+  <div class="col-lg-8">
+    <div class="card">
+      <div class="card-header">
+        <i class="fas fa-user"></i>Faculty Information
+      </div>
+      <div class="card-body">
+        <form method="post">
+          {% csrf_token %}
+          
+          <h6 class="text-muted mb-3 border-bottom pb-2">Personal Details</h6>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">First Name *</label>
+              <input type="text" name="first_name" class="form-control" required 
+                     value="{{ faculty.user.first_name }}" placeholder="Enter first name">
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Last Name *</label>
+              <input type="text" name="last_name" class="form-control" required 
+                     value="{{ faculty.user.last_name }}" placeholder="Enter last name">
+            </div>
+          </div>
+          
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Email</label>
+              <input type="email" class="form-control" value="{{ faculty.user.email }}" disabled>
+              <small class="text-muted">Email cannot be changed</small>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Phone</label>
+              <input type="text" name="phone" class="form-control" 
+                     value="{{ faculty.phone }}" placeholder="+91 9876543210">
+            </div>
+          </div>
+          
+          <h6 class="text-muted mb-3 border-bottom pb-2 mt-4">Professional Details</h6>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Designation *</label>
+              <select name="designation" class="form-select" required>
+                {% for value, label in designation_choices %}
+                <option value="{{ value }}" {% if faculty.designation == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Joining Date</label>
+              <input type="date" name="joining_date" class="form-control" 
+                     value="{{ faculty.joining_date|date:'Y-m-d' }}">
+            </div>
+          </div>
+          
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Qualification</label>
+              <input type="text" name="qualification" class="form-control" 
+                     value="{{ faculty.qualification }}" placeholder="e.g., Ph.D., M.Tech">
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Specialization</label>
+              <input type="text" name="specialization" class="form-control" 
+                     value="{{ faculty.specialization }}" placeholder="e.g., Machine Learning, Data Science">
+            </div>
+          </div>
+          
+          <h6 class="text-muted mb-3 border-bottom pb-2 mt-4">Department Assignment</h6>
+          <div class="mb-3">
+            <label class="form-label">Departments * <small class="text-muted">(Select one or more)</small></label>
+            <div class="row">
+              {% for dept in departments %}
+              <div class="col-md-6 mb-2">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="departments" 
+                         value="{{ dept.department.id }}" id="dept{{ dept.department.id }}"
+                         {% if dept.department in faculty.departments.all %}checked{% endif %}>
+                  <label class="form-check-label" for="dept{{ dept.department.id }}">
+                    {{ dept.department.name }}
+                  </label>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+          
+          <div class="d-flex gap-2 mt-4">
+            <button type="submit" class="btn btn-royal">
+              <i class="fas fa-save me-2"></i>Save Changes
+            </button>
+            <a href="{% url 'public:college_view_faculty' faculty.pk %}" class="btn btn-outline-secondary">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-lg-4">
+    <div class="card">
+      <div class="card-body text-center py-4">
+        <div class="user-avatar mx-auto mb-3" style="width: 80px; height: 80px; font-size: 2rem;">
+          {{ faculty.user.first_name|slice:":1"|upper }}{{ faculty.user.last_name|slice:":1"|upper }}
+        </div>
+        <h5 class="mb-1">{{ faculty.user.get_full_name }}</h5>
+        <p class="text-muted mb-2">{{ faculty.user.email }}</p>
+        {% if faculty.designation == 'principal' %}
+          <span class="badge bg-danger">Principal</span>
+        {% elif faculty.designation == 'hod' %}
+          <span class="badge bg-warning text-dark">HOD</span>
+        {% else %}
+          <span class="badge bg-primary">Faculty</span>
+        {% endif %}
+        <p class="mt-2"><span class="badge bg-secondary">{{ faculty.faculty_id }}</span></p>
+      </div>
+    </div>
+    
+    <div class="card mt-4">
+      <div class="card-header">
+        <i class="fas fa-info-circle"></i>Information
+      </div>
+      <div class="card-body">
+        <ul class="list-unstyled mb-0">
+          <li class="mb-2">
+            <i class="fas fa-check text-success me-2"></i>
+            Email address cannot be changed
+          </li>
+          <li class="mb-2">
+            <i class="fas fa-check text-success me-2"></i>
+            Faculty can be assigned to multiple departments
+          </li>
+          <li class="mb-2">
+            <i class="fas fa-check text-success me-2"></i>
+            Only one Principal per college
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

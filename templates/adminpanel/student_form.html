@@ -1,0 +1,143 @@
+{% extends "adminpanel/base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div class="page-header mb-0">
+    <h1 class="page-title mb-0"><i class="fas fa-user-graduate"></i>{{ action }} Student</h1>
+  </div>
+  <a href="{% url 'adminpanel:students' %}" class="btn btn-outline-royal">
+    <i class="fas fa-arrow-left me-2"></i>Back to Students
+  </a>
+</div>
+
+<div class="card">
+  <div class="card-body p-4">
+    <form method="post">
+      {% csrf_token %}
+      <div class="row g-3">
+        {% if action == 'Edit' %}
+        <div class="col-md-6">
+          <label class="form-label"><i class="fas fa-id-card me-1"></i>Student ID</label>
+          <input type="text" class="form-control" value="{{ student.student_id }}" disabled readonly>
+          <small class="text-muted">Auto-generated ID cannot be changed</small>
+        </div>
+        {% endif %}
+        <div class="col-md-6">
+          <label class="form-label"><i class="fas fa-envelope me-1"></i>Email *</label>
+          <input type="email" name="email" class="form-control" required value="{{ student.user.email|default:'' }}">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label"><i class="fas fa-user me-1"></i>First Name</label>
+          <input type="text" name="first_name" class="form-control" value="{{ student.user.first_name|default:'' }}">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label"><i class="fas fa-user me-1"></i>Last Name</label>
+          <input type="text" name="last_name" class="form-control" value="{{ student.user.last_name|default:'' }}">
+        </div>
+        <div class="col-md-6 position-relative">
+          <label class="form-label"><i class="fas fa-graduation-cap me-1"></i>Program</label>
+          <input type="text" name="program_search" id="program_search" class="form-control" placeholder="Search Program..." value="{% if student.program %}{{ student.program.name }}{% endif %}" autocomplete="off">
+          <input type="hidden" name="program" id="program_hidden" value="{% if student.program %}{{ student.program.id }}{% endif %}">
+        </div>
+        <div class="col-md-6 position-relative">
+          <label class="form-label"><i class="fas fa-university me-1"></i>College</label>
+          <input type="text" name="college_search" id="college_search" class="form-control" placeholder="Search College..." value="{% if student.college %}{{ student.college.name }}{% endif %}" autocomplete="off">
+          <input type="hidden" name="college" id="college_hidden" value="{% if student.college %}{{ student.college.id }}{% endif %}">
+        </div>
+        {% if action == 'Add' %}
+        <div class="col-md-6">
+          <label class="form-label"><i class="fas fa-lock me-1"></i>Password *</label>
+          <input type="password" name="password" class="form-control" required>
+        </div>
+        <div class="col-12">
+          <div class="alert alert-info mb-0">
+            <i class="fas fa-info-circle me-2"></i>Student ID will be auto-generated after creation (e.g., STU0001)
+          </div>
+        </div>
+        {% endif %}
+        <div class="col-12 mt-4">
+          <button type="submit" class="btn btn-royal">
+            <i class="fas fa-save me-2"></i>{{ action }} Student
+          </button>
+          <a href="{% url 'adminpanel:students' %}" class="btn btn-outline-royal ms-2">Cancel</a>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<style>
+          .custom-autocomplete-list {
+            position: absolute;
+            z-index: 1000;
+            width: 100%;
+            background: var(--white);
+            border: 1px solid var(--royal-red);
+            border-radius: 8px;
+            box-shadow: var(--shadow-soft);
+            max-height: 220px;
+            overflow-y: auto;
+            margin-top: 2px;
+          }
+          .custom-autocomplete-item {
+            padding: 10px 16px;
+            cursor: pointer;
+            color: var(--text-dark);
+            transition: background 0.2s;
+          }
+          .custom-autocomplete-item:hover, .custom-autocomplete-item.active {
+            background: var(--royal-red);
+            color: var(--white);
+          }
+        </style>
+        <script>
+          function setupAutocomplete(inputId, list, hiddenId) {
+            const input = document.getElementById(inputId);
+            const hidden = document.getElementById(hiddenId);
+            let dropdown;
+            input.addEventListener('input', function() {
+              const val = this.value.toLowerCase();
+              if (dropdown) dropdown.remove();
+              dropdown = document.createElement('div');
+              dropdown.className = 'custom-autocomplete-list';
+              input.parentNode.insertBefore(dropdown, input.nextSibling);
+              let found = false;
+              list.forEach(item => {
+                if (item.name.toLowerCase().includes(val)) {
+                  found = true;
+                  const option = document.createElement('div');
+                  option.className = 'custom-autocomplete-item';
+                  option.textContent = item.name;
+                  option.onmousedown = function(e) {
+                    e.preventDefault();
+                    input.value = item.name;
+                    hidden.value = item.id;
+                    dropdown.remove();
+                  };
+                  dropdown.appendChild(option);
+                }
+              });
+              if (!found) {
+                const noResult = document.createElement('div');
+                noResult.className = 'custom-autocomplete-item';
+                noResult.textContent = 'No match found';
+                dropdown.appendChild(noResult);
+              }
+            });
+            input.addEventListener('blur', function() {
+              setTimeout(() => { if (dropdown) dropdown.remove(); }, 150);
+            });
+          }
+          document.addEventListener('DOMContentLoaded', function() {
+            setupAutocomplete('college_search', window.collegeList, 'college_hidden');
+            setupAutocomplete('program_search', window.programList, 'program_hidden');
+          });
+        </script>
+        <script>
+          window.collegeList = [
+            {% for college in colleges %}{ name: "{{ college.name }}", id: "{{ college.id }}" },{% endfor %}
+          ];
+          window.programList = [
+            {% for program in programs %}{ name: "{{ program.name }}", id: "{{ program.id }}" },{% endfor %}
+          ];
+        </script>
+{% endblock %}

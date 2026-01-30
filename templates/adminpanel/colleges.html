@@ -1,0 +1,148 @@
+{% extends "adminpanel/base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div class="page-header mb-0">
+    <h1 class="page-title mb-0"><i class="fas fa-university"></i>Colleges</h1>
+    <p class="page-subtitle mb-0">Manage college registrations and affiliations</p>
+  </div>
+</div>
+
+<!-- Filters -->
+<div class="card mb-4">
+  <div class="card-body">
+    <form method="get" class="row g-3 align-items-end">
+      <div class="col-md-4">
+        <label class="form-label">Search</label>
+        <input type="text" name="q" class="form-control" placeholder="Search by name, code, or email..." value="{{ query }}">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Approval Status</label>
+        <select name="status" class="form-select">
+          <option value="">All Statuses</option>
+          <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending Approval</option>
+          <option value="approved" {% if status_filter == 'approved' %}selected{% endif %}>Approved</option>
+          <option value="rejected" {% if status_filter == 'rejected' %}selected{% endif %}>Rejected</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Affiliation Status</label>
+        <select name="affiliation" class="form-select">
+          <option value="">All Affiliations</option>
+          <option value="not_applied" {% if affiliation_filter == 'not_applied' %}selected{% endif %}>Not Applied</option>
+          <option value="pending" {% if affiliation_filter == 'pending' %}selected{% endif %}>Pending</option>
+          <option value="approved" {% if affiliation_filter == 'approved' %}selected{% endif %}>Affiliated</option>
+          <option value="rejected" {% if affiliation_filter == 'rejected' %}selected{% endif %}>Rejected</option>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <button type="submit" class="btn btn-royal w-100">
+          <i class="fas fa-search me-1"></i> Filter
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead>
+          <tr>
+            <th>College</th>
+            <th>Code</th>
+            <th>Contact</th>
+            <th>Approval Status</th>
+            <th>Affiliation Status</th>
+            <th>Students</th>
+            <th class="text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for college in colleges %}
+          <tr>
+            <td>
+              <div class="d-flex align-items-center">
+                <div class="avatar-circle me-3">
+                  <i class="fas fa-university"></i>
+                </div>
+                <div>
+                  <strong>{{ college.name }}</strong>
+                  <br><small class="text-muted">{{ college.college_id }}</small>
+                </div>
+              </div>
+            </td>
+            <td><span class="badge bg-royal-light text-royal">{{ college.code }}</span></td>
+            <td>
+              <small>{{ college.user.email }}</small>
+              {% if college.phone %}<br><small class="text-muted">{{ college.phone }}</small>{% endif %}
+            </td>
+            <td>
+              {% if college.status == 'pending' %}
+                <span class="badge bg-warning text-dark"><i class="fas fa-clock me-1"></i>Pending</span>
+              {% elif college.status == 'approved' %}
+                <span class="badge bg-success"><i class="fas fa-check me-1"></i>Approved</span>
+              {% else %}
+                <span class="badge bg-danger"><i class="fas fa-times me-1"></i>Rejected</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if college.affiliation_status == 'not_applied' %}
+                <span class="badge bg-secondary">Not Applied</span>
+              {% elif college.affiliation_status == 'pending' %}
+                <span class="badge bg-warning text-dark"><i class="fas fa-clock me-1"></i>Pending</span>
+              {% elif college.affiliation_status == 'approved' %}
+                <span class="badge bg-success"><i class="fas fa-handshake me-1"></i>Affiliated</span>
+              {% else %}
+                <span class="badge bg-danger"><i class="fas fa-times me-1"></i>Rejected</span>
+              {% endif %}
+            </td>
+            <td><span class="badge bg-info">{{ college.students.count }} students</span></td>
+            <td class="text-center">
+              <a href="{% url 'adminpanel:college_detail' college.id %}" class="btn btn-sm btn-outline-info me-1" title="View Details">
+                <i class="fas fa-eye"></i>
+              </a>
+              <a href="{% url 'adminpanel:college_edit' college.id %}" class="btn btn-sm btn-outline-primary me-1" title="Edit">
+                <i class="fas fa-edit"></i>
+              </a>
+              <a href="{% url 'adminpanel:college_delete' college.id %}" class="btn btn-sm btn-outline-danger" title="Delete">
+                <i class="fas fa-trash"></i>
+              </a>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="7" class="text-center py-5 text-muted">
+              <i class="fas fa-university fa-3x mb-3 d-block"></i>
+              No colleges found. <a href="{% url 'adminpanel:college_add' %}">Add one now</a>.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    
+    {% if colleges.has_other_pages %}
+    <nav class="mt-4">
+      <ul class="pagination justify-content-center mb-0">
+        {% if colleges.has_previous %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ colleges.previous_page_number }}&q={{ query }}&status={{ status_filter }}&affiliation={{ affiliation_filter }}">&laquo; Previous</a>
+        </li>
+        {% endif %}
+        
+        <li class="page-item disabled">
+          <span class="page-link">Page {{ colleges.number }} of {{ colleges.paginator.num_pages }}</span>
+        </li>
+        
+        {% if colleges.has_next %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ colleges.next_page_number }}&q={{ query }}&status={{ status_filter }}&affiliation={{ affiliation_filter }}">Next &raquo;</a>
+        </li>
+        {% endif %}
+      </ul>
+    </nav>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

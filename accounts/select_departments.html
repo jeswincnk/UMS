@@ -1,0 +1,77 @@
+{% extends 'public/college/base.html' %}
+
+{% block title %}Select Programs - College Portal{% endblock %}
+
+{% block content %}
+<div class="page-header text-center mb-5">
+  <h1 class="page-title" style="color: #c00; font-weight: 700; letter-spacing: 1px;"><i class="fas fa-graduation-cap"></i> Departments & Programs</h1>
+  <p class="page-subtitle" style="color: #b30000;">Select the programs you want to affiliate with. Departments are shown for clarity.</p>
+</div>
+
+{% if college.affiliation_status == 'approved' %}
+<div class="alert alert-success" style="background: #fff0f0; color: #c00; border-color: #c00;">
+  <i class="fas fa-check-circle me-2"></i>
+  <strong>Your affiliation has been approved!</strong> Your college is now affiliated with the university for the selected programs.
+</div>
+{% elif college.affiliation_status == 'pending' %}
+<div class="alert alert-warning" style="background: #fff0f0; color: #c00; border-color: #c00;">
+  <i class="fas fa-clock me-2"></i>
+  <strong>Affiliation Pending:</strong> Your affiliation request is currently under review. You cannot modify your program selection at this time.
+</div>
+{% endif %}
+
+<form method="post">
+    {% csrf_token %}
+    <div class="row g-4 justify-content-center">
+        {% for department in departments %}
+            <div class="col-md-6 col-lg-4 d-flex align-items-stretch">
+                <div class="card shadow-sm mb-4 department-card w-100" style="border: 2px solid #c00; background: #fff;">
+                    <div class="card-header text-center" style="background: #c00; color: #fff; border-bottom: 2px solid #c00;">
+                        <h4 class="mb-0" style="font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">{{ department.name }}</h4>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                        {% for program in department.programs.all %}
+                            <li class="list-group-item" style="background: #fff; border-color: #c00;">
+                                <label class="form-check-label" style="color: #c00; font-weight: 500;">
+                                    <input type="checkbox" class="form-check-input me-2" name="programs" value="{{ program.id }}" {% if program.id in affiliated_program_ids %}checked{% endif %} {% if college.affiliation_status != 'not_applied' %}disabled{% endif %}>
+                                    {{ program.name }}
+                                </label>
+                            </li>
+                        {% empty %}
+                            <li class="list-group-item text-muted">No programs available.</li>
+                        {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    <div class="mt-4 text-center">
+        <button type="submit" class="btn" style="background: #c00; color: #fff; border: none; font-weight: 600; padding: 0.75rem 2rem; font-size: 1.1rem; border-radius: 0.5rem;" {% if college.affiliation_status != 'not_applied' %}disabled{% endif %}>Save Selection</button>
+    </div>
+</form>
+{% endblock %}
+
+<style>
+.department-card {
+    min-height: 320px;
+    transition: box-shadow 0.2s;
+}
+.department-card:hover {
+    box-shadow: 0 0 0 4px #ffeaea;
+}
+.page-header {
+    margin-bottom: 2rem;
+}
+.page-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+}
+.page-subtitle {
+    font-size: 1.1rem;
+}
+.list-group-item {
+    border-color: #c00 !important;
+}
+</style>

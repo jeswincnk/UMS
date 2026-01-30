@@ -1,0 +1,156 @@
+{% extends "public/base.html" %}
+{% block title %}About Us - University Management System{% endblock %}
+{% block content %}
+<!-- Page Header -->
+<section class="page-header-section" style="margin-top: 76px;">
+  <div class="container">
+    <h1>About Us</h1>
+    <p>Discover our story, mission, and the values that drive us to deliver excellence in education.</p>
+    <div class="breadcrumb-custom">
+      <a href="{% url 'public:index' %}">Home</a>
+      <span>/</span>
+      <span>About Us</span>
+    </div>
+  </div>
+</section>
+
+<!-- About Content -->
+<section class="section">
+  <div class="container">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-6">
+        <div class="about-image" style="background: linear-gradient(135deg, var(--royal-red), var(--deep-red)); padding: 3rem; text-align: center;">
+          <i class="fas fa-university" style="font-size: 8rem; color: white; opacity: 0.9;"></i>
+          <h3 style="color: white; margin-top: 1.5rem;">Established 1990</h3>
+          <p style="color: rgba(255,255,255,0.8);">Over 30 years of academic excellence</p>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="about-content">
+          <h2>Our Story & <span style="color: var(--royal-red);">Mission</span></h2>
+          <p>Founded in 1990, our university has been at the forefront of educational innovation for over three decades. We believe in nurturing minds and shaping futures through quality education and holistic development.</p>
+          <p>Our mission is to provide accessible, high-quality education that prepares students for the challenges of tomorrow while instilling values of integrity, innovation, and service to society.</p>
+          
+          <div class="mt-4">
+            <div class="value-item">
+              <div class="value-icon">
+                <i class="fas fa-bullseye"></i>
+              </div>
+              <div>
+                <h5>Our Vision</h5>
+                <p>To be a globally recognized institution of higher learning that transforms lives through education.</p>
+              </div>
+            </div>
+            <div class="value-item">
+              <div class="value-icon">
+                <i class="fas fa-heart"></i>
+              </div>
+              <div>
+                <h5>Our Values</h5>
+                <p>Excellence, Integrity, Innovation, Inclusivity, and Social Responsibility.</p>
+              </div>
+            </div>
+            <div class="value-item">
+              <div class="value-icon">
+                <i class="fas fa-flag"></i>
+              </div>
+              <div>
+                <h5>Our Goal</h5>
+                <p>Empowering students with knowledge and skills to become leaders in their chosen fields.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Why Choose Us -->
+<section class="section section-light">
+  <div class="container">
+    <h2 class="section-title">What Makes Us <span>Different</span></h2>
+    <p class="section-subtitle">Our commitment to excellence sets us apart from other institutions.</p>
+    
+    <div class="row g-4">
+      <div class="col-md-6 col-lg-3">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-award"></i>
+          </div>
+          <h4>Accreditation</h4>
+          <p>Nationally and internationally accredited programs recognized worldwide.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-3">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-flask"></i>
+          </div>
+          <h4>Research Focus</h4>
+          <p>Cutting-edge research facilities and opportunities for innovation.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-3">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-handshake"></i>
+          </div>
+          <h4>Industry Partners</h4>
+          <p>Strong collaborations with leading companies for internships and jobs.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-3">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-user-graduate"></i>
+          </div>
+          <h4>Alumni Network</h4>
+          <p>A strong network of successful alumni across the globe.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Leadership -->
+<section class="section">
+  <div class="container">
+    <h2 class="section-title">Our <span>Leadership</span></h2>
+    <p class="section-subtitle">Meet the visionaries who guide our institution towards excellence.</p>
+    
+    <div class="row g-4 justify-content-center">
+      <div class="col-md-6 col-lg-4">
+        <div class="feature-card">
+          <div class="feature-icon" style="width: 100px; height: 100px; font-size: 2.5rem;">
+            <i class="fas fa-user-tie"></i>
+          </div>
+          <h4>Dr. John Smith</h4>
+          <p style="color: var(--royal-red); font-weight: 600; margin-bottom: 0.5rem;">Vice Chancellor</p>
+          <p>Ph.D. in Education Administration with over 25 years of academic leadership experience.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4">
+        <div class="feature-card">
+          <div class="feature-icon" style="width: 100px; height: 100px; font-size: 2.5rem;">
+            <i class="fas fa-user-tie"></i>
+          </div>
+          <h4>Dr. Sarah Johnson</h4>
+          <p style="color: var(--royal-red); font-weight: 600; margin-bottom: 0.5rem;">Pro Vice Chancellor</p>
+          <p>Expert in curriculum development and educational technology innovation.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4">
+        <div class="feature-card">
+          <div class="feature-icon" style="width: 100px; height: 100px; font-size: 2.5rem;">
+            <i class="fas fa-user-tie"></i>
+          </div>
+          <h4>Prof. Michael Brown</h4>
+          <p style="color: var(--royal-red); font-weight: 600; margin-bottom: 0.5rem;">Registrar</p>
+          <p>Overseeing academic administration and student services for 15 years.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

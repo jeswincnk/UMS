@@ -1,0 +1,86 @@
+{% extends 'public/student/base.html' %}
+
+{% block title %}Submit Medical Certificate - Student Portal{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title"><i class="fas fa-file-medical"></i> Submit Medical Certificate</h1>
+  <p class="page-subtitle">Upload your medical certificate for {{ current_month }} {{ current_year }}</p>
+</div>
+
+<div class="row">
+  <div class="col-lg-8">
+    <div class="card">
+      <div class="card-header bg-danger text-white">
+        <i class="fas fa-exclamation-triangle me-2"></i>Medical Certificate Required
+      </div>
+      <div class="card-body">
+        <div class="alert alert-info mb-4">
+          <i class="fas fa-info-circle me-2"></i>
+          You have exceeded 3 leaves this month. Please submit a valid medical certificate to justify your absences.
+        </div>
+        
+        <form method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          
+          <div class="mb-3">
+            <label class="form-label"><i class="fas fa-file-upload me-1"></i>Medical Certificate *</label>
+            <input type="file" name="certificate" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required>
+            <small class="text-muted">Accepted formats: PDF, JPG, PNG (Max 5MB)</small>
+          </div>
+          
+          <div class="mb-4">
+            <label class="form-label"><i class="fas fa-comment me-1"></i>Reason for Leave</label>
+            <textarea name="reason" class="form-control" rows="4" placeholder="Describe the reason for your absence..."></textarea>
+          </div>
+          
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-paper-plane me-2"></i>Submit Certificate
+            </button>
+            <a href="{% url 'public:student_attendance' %}" class="btn btn-outline-secondary">
+              <i class="fas fa-arrow-left me-2"></i>Back
+            </a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-lg-4">
+    <div class="card">
+      <div class="card-header">
+        <i class="fas fa-info-circle me-2"></i>Important Information
+      </div>
+      <div class="card-body">
+        <ul class="list-unstyled mb-0">
+          <li class="mb-2">
+            <i class="fas fa-check-circle text-success me-2"></i>
+            Certificate will be reviewed by your HOD
+          </li>
+          <li class="mb-2">
+            <i class="fas fa-check-circle text-success me-2"></i>
+            Use clear, legible scans
+          </li>
+          <li class="mb-2">
+            <i class="fas fa-check-circle text-success me-2"></i>
+            Include doctor's signature and stamp
+          </li>
+          <li>
+            <i class="fas fa-exclamation-circle text-warning me-2"></i>
+            Fake certificates will result in disciplinary action
+          </li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="card mt-3 bg-light">
+      <div class="card-body text-center">
+        <i class="fas fa-calendar-alt fa-2x text-primary mb-2"></i>
+        <h5>{{ current_month }} {{ current_year }}</h5>
+        <p class="text-muted mb-0">Certificate Period</p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

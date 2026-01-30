@@ -1,0 +1,139 @@
+{% extends 'public/student/base.html' %}
+
+{% block title %}Exam Results - Student Portal{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title"><i class="fas fa-award"></i> Exam Results</h1>
+  <p class="page-subtitle">View your university examination results</p>
+</div>
+
+{% if exam_results %}
+{% for exam_data in exam_results %}
+<div class="card mb-4">
+  <div class="card-header {% if exam_data.status == 'Pass' %}bg-success{% else %}bg-danger{% endif %} text-white">
+    <div class="d-flex justify-content-between align-items-center">
+      <div>
+        <h5 class="mb-0"><i class="fas fa-graduation-cap me-2"></i>{{ exam_data.exam.name }}</h5>
+        <small>{{ exam_data.exam.program.name }} | Semester {{ exam_data.exam.semester }} | {{ exam_data.exam.academic_year }}</small>
+      </div>
+      <div class="text-end">
+        <span class="badge bg-white text-dark fs-6">
+          {% if exam_data.status == 'Pass' %}
+          <i class="fas fa-check-circle text-success me-1"></i>PASSED
+          {% else %}
+          <i class="fas fa-times-circle text-danger me-1"></i>FAILED
+          {% endif %}
+        </span>
+      </div>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-bordered mb-4">
+        <thead class="table-light">
+          <tr>
+            <th>Subject Code</th>
+            <th>Subject Name</th>
+            <th class="text-center">Max Marks</th>
+            <th class="text-center">Marks Obtained</th>
+            <th class="text-center">Grade</th>
+            <th class="text-center">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for result in exam_data.results %}
+          <tr>
+            <td><strong>{{ result.exam_subject.course.code }}</strong></td>
+            <td>{{ result.exam_subject.course.title }}</td>
+            <td class="text-center">{{ result.exam_subject.max_marks }}</td>
+            <td class="text-center">
+              <strong class="{% if result.is_pass %}text-success{% else %}text-danger{% endif %}">
+                {{ result.marks_obtained|default:"AB" }}
+              </strong>
+            </td>
+            <td class="text-center">
+              <span class="badge {% if result.grade == 'O' %}bg-success{% elif result.grade in 'A+,A' %}bg-primary{% elif result.grade in 'B+,B' %}bg-info{% elif result.grade == 'C' %}bg-warning text-dark{% elif result.grade == 'P' %}bg-secondary{% else %}bg-danger{% endif %} fs-6">
+                {{ result.grade }}
+              </span>
+            </td>
+            <td class="text-center">
+              {% if result.is_pass %}
+              <i class="fas fa-check-circle text-success"></i>
+              {% else %}
+              <i class="fas fa-times-circle text-danger"></i>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+        <tfoot class="table-dark">
+          <tr>
+            <td colspan="2" class="text-end"><strong>Total</strong></td>
+            <td class="text-center"><strong>{{ exam_data.max_marks }}</strong></td>
+            <td class="text-center"><strong>{{ exam_data.total_marks }}</strong></td>
+            <td class="text-center"><strong>{{ exam_data.percentage }}%</strong></td>
+            <td class="text-center">
+              <strong class="{% if exam_data.status == 'Pass' %}text-success{% else %}text-danger{% endif %}">
+                {{ exam_data.status|upper }}
+              </strong>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+    
+    <!-- Result Summary -->
+    <div class="row">
+      <div class="col-md-4">
+        <div class="bg-light rounded p-3 text-center">
+          <small class="text-muted">Total Marks</small>
+          <h4 class="mb-0">{{ exam_data.total_marks }} / {{ exam_data.max_marks }}</h4>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="bg-light rounded p-3 text-center">
+          <small class="text-muted">Percentage</small>
+          <h4 class="mb-0 {% if exam_data.percentage >= 60 %}text-success{% elif exam_data.percentage >= 40 %}text-warning{% else %}text-danger{% endif %}">{{ exam_data.percentage }}%</h4>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="bg-light rounded p-3 text-center">
+          <small class="text-muted">Exam Period</small>
+          <h6 class="mb-0">{{ exam_data.exam.exam_start_date|date:"M d" }} - {{ exam_data.exam.exam_end_date|date:"M d, Y" }}</h6>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}
+
+<!-- Grade Legend -->
+<div class="card">
+  <div class="card-header">
+    <i class="fas fa-info-circle me-2"></i>Grade Legend
+  </div>
+  <div class="card-body">
+    <div class="row text-center">
+      <div class="col"><span class="badge bg-success">O</span><br><small>Outstanding (90%+)</small></div>
+      <div class="col"><span class="badge bg-primary">A+</span><br><small>Excellent (80-89%)</small></div>
+      <div class="col"><span class="badge bg-primary">A</span><br><small>Very Good (70-79%)</small></div>
+      <div class="col"><span class="badge bg-info">B+</span><br><small>Good (60-69%)</small></div>
+      <div class="col"><span class="badge bg-info">B</span><br><small>Above Avg (55-59%)</small></div>
+      <div class="col"><span class="badge bg-warning text-dark">C</span><br><small>Average (50-54%)</small></div>
+      <div class="col"><span class="badge bg-secondary">P</span><br><small>Pass (40-49%)</small></div>
+      <div class="col"><span class="badge bg-danger">F</span><br><small>Fail (&lt;40%)</small></div>
+    </div>
+  </div>
+</div>
+
+{% else %}
+<div class="card">
+  <div class="card-body text-center py-5">
+    <i class="fas fa-clipboard-list fa-4x text-muted mb-4"></i>
+    <h4 class="text-muted">No Results Available</h4>
+    <p class="text-muted">Your exam results will appear here once published by the university.</p>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

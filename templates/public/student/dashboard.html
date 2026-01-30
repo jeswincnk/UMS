@@ -1,0 +1,97 @@
+{% extends 'public/student/base.html' %}
+
+{% block title %}Dashboard - Student Portal{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title"><i class="fas fa-th-large"></i>Welcome, {{ student.user.first_name }}!</h1>
+  <p class="page-subtitle">Your student dashboard</p>
+</div>
+
+<div class="row g-4 mb-4">
+  <div class="col-md-4">
+    <div class="card card-stats">
+      <div class="stat-icon">
+        <i class="fas fa-id-card"></i>
+      </div>
+      <div class="stat-value">{{ student.student_id }}</div>
+      <div class="stat-label">Student ID</div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card card-stats">
+      <div class="stat-icon">
+        <i class="fas fa-building"></i>
+      </div>
+      <div class="stat-value" style="font-size: 1.2rem;">{{ student.department.name|default:"-"|truncatechars:20 }}</div>
+      <div class="stat-label">Department</div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card card-stats">
+      <div class="stat-icon">
+        <i class="fas fa-graduation-cap"></i>
+      </div>
+      <div class="stat-value" style="font-size: 1.2rem;">{{ student.program.name|default:"-"|truncatechars:20 }}</div>
+      <div class="stat-label">Program</div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-6">
+    <div class="card">
+      <div class="card-header">
+        <i class="fas fa-user"></i>Personal Information
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-6 mb-3">
+            <label class="form-label text-muted small">Full Name</label>
+            <p class="mb-0 fw-medium">{{ student.user.get_full_name }}</p>
+          </div>
+          <div class="col-6 mb-3">
+            <label class="form-label text-muted small">Email</label>
+            <p class="mb-0 fw-medium">{{ student.user.email }}</p>
+          </div>
+          <div class="col-6 mb-3">
+            <label class="form-label text-muted small">Phone</label>
+            <p class="mb-0 fw-medium">{{ student.phone|default:"-" }}</p>
+          </div>
+          <div class="col-6 mb-3">
+            <label class="form-label text-muted small">Roll Number</label>
+            <p class="mb-0 fw-medium"><code>{{ student.roll_number|default:"-" }}</code></p>
+          </div>
+        </div>
+        <a href="{% url 'public:student_profile' %}" class="btn btn-royal btn-sm mt-2">
+          <i class="fas fa-edit me-2"></i>Edit Profile
+        </a>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-lg-6">
+    <div class="card">
+      <div class="card-header">
+        <i class="fas fa-university"></i>College Information
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-12 mb-3">
+            <label class="form-label text-muted small">College</label>
+            <p class="mb-0 fw-medium">{{ college.name }}</p>
+          </div>
+          <div class="col-6 mb-3">
+            <label class="form-label text-muted small">College Code</label>
+            <p class="mb-0 fw-medium"><code>{{ college.code }}</code></p>
+          </div>
+          <div class="col-6 mb-3">
+            <label class="form-label text-muted small">Admission Date</label>
+            <p class="mb-0 fw-medium">{{ student.admission_date|date:"F d, Y"|default:"-" }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,119 @@
+{% extends 'public/student/base.html' %}
+
+{% block title %}Profile - Student Portal{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title"><i class="fas fa-user"></i>My Profile</h1>
+  <p class="page-subtitle">View and update your profile information</p>
+</div>
+
+<div class="row">
+  <div class="col-lg-4">
+    <div class="card">
+      <div class="card-body text-center py-5">
+        <div class="user-avatar mx-auto mb-3" style="width: 100px; height: 100px; font-size: 2.5rem;">
+          {{ student.user.first_name|slice:":1"|upper }}{{ student.user.last_name|slice:":1"|upper }}
+        </div>
+        <h4 class="mb-1">{{ student.user.get_full_name }}</h4>
+        <p class="text-muted mb-2">{{ student.user.email }}</p>
+        <span class="badge bg-primary">{{ student.student_id }}</span>
+      </div>
+    </div>
+    
+    <div class="card mt-4">
+      <div class="card-header">
+        <i class="fas fa-graduation-cap"></i>Academic Info
+      </div>
+      <div class="card-body">
+        <ul class="list-unstyled mb-0">
+          <li class="mb-2">
+            <small class="text-muted">Department</small><br>
+            <strong>{{ student.department.name|default:"-" }}</strong>
+          </li>
+          <li class="mb-2">
+            <small class="text-muted">Program</small><br>
+            <strong>{{ student.program.name|default:"-" }}</strong>
+          </li>
+          <li class="mb-2">
+            <small class="text-muted">Roll Number</small><br>
+            <strong><code>{{ student.roll_number|default:"-" }}</code></strong>
+          </li>
+          <li class="mb-0">
+            <small class="text-muted">Admission Date</small><br>
+            <strong>{{ student.admission_date|date:"F d, Y"|default:"-" }}</strong>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-lg-8">
+    <div class="card">
+      <div class="card-header">
+        <i class="fas fa-edit"></i>Update Profile
+      </div>
+      <div class="card-body">
+        <form method="post">
+          {% csrf_token %}
+          
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">First Name</label>
+              <input type="text" class="form-control" value="{{ student.user.first_name }}" disabled>
+              <small class="text-muted">Contact college admin to change</small>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Last Name</label>
+              <input type="text" class="form-control" value="{{ student.user.last_name }}" disabled>
+              <small class="text-muted">Contact college admin to change</small>
+            </div>
+          </div>
+          
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Email</label>
+              <input type="email" class="form-control" value="{{ student.user.email }}" disabled>
+              <small class="text-muted">Email cannot be changed</small>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Phone</label>
+              <input type="text" name="phone" class="form-control" value="{{ student.phone }}" placeholder="+91 9876543210">
+            </div>
+          </div>
+          
+          <button type="submit" class="btn btn-royal">
+            <i class="fas fa-save me-2"></i>Save Changes
+          </button>
+        </form>
+      </div>
+    </div>
+    
+    <div class="card mt-4">
+      <div class="card-header">
+        <i class="fas fa-university"></i>College Information
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label text-muted small">College Name</label>
+            <p class="mb-0 fw-medium">{{ college.name }}</p>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label text-muted small">College Code</label>
+            <p class="mb-0 fw-medium"><code>{{ college.code }}</code></p>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label text-muted small">College Email</label>
+            <p class="mb-0 fw-medium">{{ college.email|default:"-" }}</p>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label text-muted small">College Phone</label>
+            <p class="mb-0 fw-medium">{{ college.phone|default:"-" }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,114 @@
+{% extends 'adminpanel/base.html' %}
+
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">
+    <i class="fas fa-{% if exam %}edit{% else %}plus{% endif %}"></i>
+    {% if exam %}Edit Exam{% else %}Add Exam{% endif %}
+  </h1>
+  <p class="page-subtitle">
+    {% if exam %}Update university exam details{% else %}Create a new university examination{% endif %}
+  </p>
+</div>
+
+<div class="row">
+  <div class="col-lg-8">
+    <div class="card">
+      <div class="card-header">
+        <i class="fas fa-file-alt"></i>Exam Details
+      </div>
+      <div class="card-body">
+        <form method="post">
+          {% csrf_token %}
+          
+          <div class="mb-3">
+            <label for="name" class="form-label">Exam Name <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="name" name="name" 
+                   value="{{ exam.name|default:'' }}" required
+                   placeholder="e.g., End Semester Examination - December 2025">
+          </div>
+          
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="program" class="form-label">Program <span class="text-danger">*</span></label>
+              <select class="form-select" id="program" name="program" required>
+                <option value="">Select Program</option>
+                {% for program in programs %}
+                  <option value="{{ program.pk }}" {% if exam.program_id == program.pk %}selected{% endif %}>
+                    {{ program.name }}
+                  </option>
+                {% endfor %}
+              </select>
+            </div>
+            
+            <div class="col-md-6 mb-3">
+              <label for="semester" class="form-label">Semester <span class="text-danger">*</span></label>
+              <select class="form-select" id="semester" name="semester" required>
+                <option value="">Select Semester</option>
+                {% for i in "12345678" %}
+                  <option value="{{ i }}" {% if exam.semester|stringformat:"s" == i %}selected{% endif %}>
+                    Semester {{ i }}
+                  </option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          
+          <div class="mb-3">
+            <label for="academic_year" class="form-label">Academic Year <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="academic_year" name="academic_year" 
+                   value="{{ exam.academic_year|default:'' }}" required
+                   placeholder="e.g., 2025-2026">
+          </div>
+          
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="exam_start_date" class="form-label">Start Date <span class="text-danger">*</span></label>
+              <input type="date" class="form-control" id="exam_start_date" name="exam_start_date"
+                     value="{{ exam.exam_start_date|date:'Y-m-d'|default:'' }}" required>
+            </div>
+            
+            <div class="col-md-6 mb-3">
+              <label for="exam_end_date" class="form-label">End Date <span class="text-danger">*</span></label>
+              <input type="date" class="form-control" id="exam_end_date" name="exam_end_date"
+                     value="{{ exam.exam_end_date|date:'Y-m-d'|default:'' }}" required>
+            </div>
+          </div>
+          
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-royal">
+              <i class="fas fa-save me-2"></i>{% if exam %}Update{% else %}Create{% endif %} Exam
+            </button>
+            <a href="{% url 'adminpanel:exams' %}" class="btn btn-outline-secondary">
+              <i class="fas fa-times me-2"></i>Cancel
+            </a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-lg-4">
+    <div class="card">
+      <div class="card-header">
+        <i class="fas fa-info-circle"></i>Information
+      </div>
+      <div class="card-body">
+        <p class="mb-3">
+          <strong>After creating an exam:</strong>
+        </p>
+        <ol class="mb-3">
+          <li>Add subjects to the exam</li>
+          <li>Upload question papers for each subject</li>
+          <li>Enter student results</li>
+          <li>Publish results when ready</li>
+        </ol>
+        <p class="mb-0 text-muted">
+          <i class="fas fa-lightbulb me-1"></i>
+          Students will only see results after you publish them.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

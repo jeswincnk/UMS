@@ -1,0 +1,141 @@
+{% extends 'public/hod/base.html' %}
+
+{% block title %}Dashboard - HOD Portal{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title"><i class="fas fa-th-large"></i>Welcome, {{ faculty.user.first_name }}!</h1>
+  <p class="page-subtitle">Head of Department Dashboard</p>
+</div>
+
+<div class="row g-4 mb-4">
+  <div class="col-md-3">
+    <div class="card card-stats">
+      <div class="stat-icon">
+        <i class="fas fa-building"></i>
+      </div>
+      <div class="stat-value">{{ departments|length }}</div>
+      <div class="stat-label">My Departments</div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card card-stats">
+      <div class="stat-icon">
+        <i class="fas fa-chalkboard-teacher"></i>
+      </div>
+      <div class="stat-value">{{ total_faculty }}</div>
+      <div class="stat-label">Faculty Members</div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card card-stats">
+      <div class="stat-icon">
+        <i class="fas fa-user-graduate"></i>
+      </div>
+      <div class="stat-value">{{ total_students }}</div>
+      <div class="stat-label">Students</div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card card-stats">
+      <div class="stat-icon">
+        <i class="fas fa-university"></i>
+      </div>
+      <div class="stat-value" style="font-size: 1rem;">{{ college.code }}</div>
+      <div class="stat-label">College</div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-6">
+    <div class="card">
+      <div class="card-header">
+        <i class="fas fa-building"></i>My Departments
+      </div>
+      <div class="card-body">
+        {% if departments %}
+        <ul class="list-unstyled mb-0">
+          {% for dept in departments %}
+          <li class="mb-3 p-3 bg-light rounded">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <strong>{{ dept.name }}</strong>
+                <br><small class="text-muted">{{ dept.code }}</small>
+              </div>
+              <span class="badge bg-warning text-dark">HOD</span>
+            </div>
+          </li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <p class="text-muted mb-0">No departments assigned.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-lg-6">
+    <div class="card">
+      <div class="card-header">
+        <i class="fas fa-tasks"></i>Quick Actions
+      </div>
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-6">
+            <a href="{% url 'public:hod_faculty' %}" class="btn btn-outline-secondary w-100 py-3">
+              <i class="fas fa-chalkboard-teacher d-block mb-2 fa-2x"></i>
+              View Faculty
+            </a>
+          </div>
+          <div class="col-6">
+            <a href="{% url 'public:hod_students' %}" class="btn btn-outline-secondary w-100 py-3">
+              <i class="fas fa-user-graduate d-block mb-2 fa-2x"></i>
+              View Students
+            </a>
+          </div>
+          <div class="col-6">
+            <a href="{% url 'public:hod_profile' %}" class="btn btn-outline-secondary w-100 py-3">
+              <i class="fas fa-user d-block mb-2 fa-2x"></i>
+              My Profile
+            </a>
+          </div>
+          <div class="col-6">
+            <form method="post" action="{% url 'logout' %}" class="w-100">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-outline-danger w-100 py-3">
+                <i class="fas fa-sign-out-alt d-block mb-2 fa-2x"></i>
+                Logout
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header">
+        <i class="fas fa-university"></i>College Information
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-4 mb-3">
+            <label class="form-label text-muted small">College Name</label>
+            <p class="mb-0 fw-medium">{{ college.name }}</p>
+          </div>
+          <div class="col-md-4 mb-3">
+            <label class="form-label text-muted small">College Code</label>
+            <p class="mb-0 fw-medium"><code>{{ college.code }}</code></p>
+          </div>
+          <div class="col-md-4 mb-3">
+            <label class="form-label text-muted small">Your Faculty ID</label>
+            <p class="mb-0 fw-medium"><code>{{ faculty.faculty_id }}</code></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

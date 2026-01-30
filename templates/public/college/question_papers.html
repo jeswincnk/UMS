@@ -1,0 +1,75 @@
+{% extends 'public/college/base.html' %}
+
+{% block title %}Question Papers - College Portal{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title"><i class="fas fa-file-alt"></i> Question Papers</h1>
+  <p class="page-subtitle">Download university exam question papers</p>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <i class="fas fa-download me-2"></i>Available Question Papers
+  </div>
+  <div class="card-body">
+    {% if papers %}
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>Paper Title</th>
+            <th>Subject</th>
+            <th>Exam</th>
+            <th>Release Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for paper in papers %}
+          <tr>
+            <td>
+              <strong>{{ paper.title }}</strong>
+            </td>
+            <td>
+              <span class="badge bg-secondary">{{ paper.exam_subject.course.code }}</span>
+              {{ paper.exam_subject.course.title|truncatechars:30 }}
+            </td>
+            <td>
+              <small class="text-muted">{{ paper.exam_subject.exam.name }}</small>
+            </td>
+            <td>{{ paper.release_datetime|date:"M d, Y h:i A" }}</td>
+            <td>
+              <a href="{% url 'public:college_download_paper' paper.pk %}" class="btn btn-sm btn-royal">
+                <i class="fas fa-download me-1"></i>Download
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+      <i class="fas fa-file-alt fa-3x text-muted mb-3"></i>
+      <h5 class="text-muted">No Question Papers Available</h5>
+      <p class="text-muted">Question papers will appear here when released by the university.</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<div class="card mt-4">
+  <div class="card-header">
+    <i class="fas fa-info-circle me-2"></i>Important Notes
+  </div>
+  <div class="card-body">
+    <ul class="mb-0">
+      <li>Question papers are released automatically at the scheduled time.</li>
+      <li>Download logs are maintained for audit purposes.</li>
+      <li>Ensure secure handling of all examination materials.</li>
+      <li>Contact university admin for any issues with question papers.</li>
+    </ul>
+  </div>
+</div>
+{% endblock %}

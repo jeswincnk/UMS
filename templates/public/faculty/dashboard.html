@@ -1,0 +1,119 @@
+{% extends 'public/faculty/base.html' %}
+
+{% block title %}Dashboard - Faculty Portal{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title"><i class="fas fa-th-large"></i>Welcome, {{ faculty.user.first_name }}!</h1>
+  <p class="page-subtitle">Your faculty dashboard</p>
+</div>
+
+<div class="row g-4 mb-4">
+  <div class="col-md-4">
+    <div class="card card-stats">
+      <div class="stat-icon">
+        <i class="fas fa-id-card"></i>
+      </div>
+      <div class="stat-value">{{ faculty.faculty_id }}</div>
+      <div class="stat-label">Faculty ID</div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card card-stats">
+      <div class="stat-icon">
+        <i class="fas fa-building"></i>
+      </div>
+      <div class="stat-value">{{ departments|length }}</div>
+      <div class="stat-label">Departments</div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card card-stats">
+      <div class="stat-icon">
+        <i class="fas fa-user-tie"></i>
+      </div>
+      <div class="stat-value">{{ faculty.get_designation_display }}</div>
+      <div class="stat-label">Designation</div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-6">
+    <div class="card">
+      <div class="card-header">
+        <i class="fas fa-user"></i>Personal Information
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-6 mb-3">
+            <label class="form-label text-muted small">Full Name</label>
+            <p class="mb-0 fw-medium">{{ faculty.user.get_full_name }}</p>
+          </div>
+          <div class="col-6 mb-3">
+            <label class="form-label text-muted small">Email</label>
+            <p class="mb-0 fw-medium">{{ faculty.user.email }}</p>
+          </div>
+          <div class="col-6 mb-3">
+            <label class="form-label text-muted small">Phone</label>
+            <p class="mb-0 fw-medium">{{ faculty.phone|default:"-" }}</p>
+          </div>
+          <div class="col-6 mb-3">
+            <label class="form-label text-muted small">Qualification</label>
+            <p class="mb-0 fw-medium">{{ faculty.qualification|default:"-" }}</p>
+          </div>
+        </div>
+        <a href="{% url 'public:faculty_profile' %}" class="btn btn-royal btn-sm mt-2">
+          <i class="fas fa-edit me-2"></i>Edit Profile
+        </a>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-lg-6">
+    <div class="card">
+      <div class="card-header">
+        <i class="fas fa-building"></i>Assigned Departments
+      </div>
+      <div class="card-body">
+        {% if departments %}
+        <ul class="list-unstyled mb-0">
+          {% for dept in departments %}
+          <li class="mb-2 p-2 bg-light rounded">
+            <i class="fas fa-university text-muted me-2"></i>
+            <strong>{{ dept.name }}</strong>
+          </li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <p class="text-muted mb-0">No departments assigned.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header">
+        <i class="fas fa-university"></i>College Information
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-4 mb-3">
+            <label class="form-label text-muted small">College Name</label>
+            <p class="mb-0 fw-medium">{{ college.name }}</p>
+          </div>
+          <div class="col-md-4 mb-3">
+            <label class="form-label text-muted small">College Code</label>
+            <p class="mb-0 fw-medium"><code>{{ college.code }}</code></p>
+          </div>
+          <div class="col-md-4 mb-3">
+            <label class="form-label text-muted small">Joining Date</label>
+            <p class="mb-0 fw-medium">{{ faculty.joining_date|date:"F d, Y"|default:"-" }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

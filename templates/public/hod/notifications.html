@@ -1,0 +1,112 @@
+{% extends 'public/hod/base.html' %}
+
+{% block title %}Exam Notifications - HOD Portal{% endblock %}
+
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-center">
+  <div>
+    <h1 class="page-title"><i class="fas fa-bell"></i> Exam Notifications</h1>
+    <p class="page-subtitle">Manage exam notifications for your college</p>
+  </div>
+  <a href="{% url 'public:hod_add_notification' %}" class="btn btn-warning">
+    <i class="fas fa-plus me-2"></i>New Notification
+  </a>
+</div>
+
+<!-- University Notifications -->
+<div class="card mb-4">
+  <div class="card-header bg-primary text-white">
+    <i class="fas fa-university me-2"></i>University Notifications
+  </div>
+  <div class="card-body">
+    {% if university_notifications %}
+    <div class="list-group list-group-flush">
+      {% for notif in university_notifications %}
+      <div class="list-group-item border-0 px-0">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            {% if notif.priority == 'urgent' %}
+            <span class="badge bg-danger me-2">URGENT</span>
+            {% elif notif.priority == 'important' %}
+            <span class="badge bg-warning text-dark me-2">Important</span>
+            {% endif %}
+            <h6 class="mb-1">{{ notif.title }}</h6>
+            <p class="mb-1 text-muted">{{ notif.content|truncatechars:150 }}</p>
+            <small class="text-muted">
+              <i class="fas fa-calendar me-1"></i>{{ notif.created_at|date:"M d, Y" }}
+              {% if notif.exam_date %}
+              | <i class="fas fa-clock me-1"></i>Exam: {{ notif.exam_date|date:"M d, Y" }}
+              {% endif %}
+            </small>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p class="text-muted text-center py-3 mb-0">No university notifications at this time.</p>
+    {% endif %}
+  </div>
+</div>
+
+<!-- College Notifications -->
+<div class="card">
+  <div class="card-header bg-warning text-dark">
+    <i class="fas fa-school me-2"></i>College Notifications
+  </div>
+  <div class="card-body">
+    {% if notifications %}
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Priority</th>
+            <th>Exam Date</th>
+            <th>Created</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for notif in notifications %}
+          <tr>
+            <td>
+              <strong>{{ notif.title }}</strong>
+              <br><small class="text-muted">{{ notif.content|truncatechars:50 }}</small>
+            </td>
+            <td>
+              {% if notif.priority == 'urgent' %}
+              <span class="badge bg-danger">Urgent</span>
+              {% elif notif.priority == 'important' %}
+              <span class="badge bg-warning text-dark">Important</span>
+              {% else %}
+              <span class="badge bg-secondary">Normal</span>
+              {% endif %}
+            </td>
+            <td>{{ notif.exam_date|date:"M d, Y"|default:"-" }}</td>
+            <td>{{ notif.created_at|date:"M d, Y" }}</td>
+            <td>
+              {% if notif.is_active %}
+              <span class="badge bg-success">Active</span>
+              {% else %}
+              <span class="badge bg-secondary">Inactive</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+      <i class="fas fa-bell-slash fa-3x text-muted mb-3"></i>
+      <h5 class="text-muted">No College Notifications</h5>
+      <p class="text-muted">Create a notification for students and faculty.</p>
+      <a href="{% url 'public:hod_add_notification' %}" class="btn btn-warning">
+        <i class="fas fa-plus me-2"></i>Create Notification
+      </a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

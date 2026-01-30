@@ -1,0 +1,114 @@
+{% extends 'public/hod/base.html' %}
+
+{% block title %}Attendance Management - HOD Portal{% endblock %}
+
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-center">
+  <div>
+    <h1 class="page-title"><i class="fas fa-clipboard-check"></i> Attendance Management</h1>
+    <p class="page-subtitle">Manage student attendance for your departments</p>
+  </div>
+  <a href="{% url 'public:hod_add_attendance' %}" class="btn btn-warning">
+    <i class="fas fa-plus me-2"></i>Add Attendance
+  </a>
+</div>
+
+<div class="row g-4 mb-4">
+  <div class="col-md-4">
+    <div class="card text-center">
+      <div class="card-body">
+        <i class="fas fa-calendar-check fa-2x text-warning mb-2"></i>
+        <h3>{{ sessions.count }}</h3>
+        <p class="text-muted mb-0">Total Sessions</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card text-center">
+      <div class="card-body">
+        <i class="fas fa-book fa-2x text-info mb-2"></i>
+        <h3>{{ subjects.count }}</h3>
+        <p class="text-muted mb-0">Subjects</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card text-center">
+      <div class="card-body">
+        <i class="fas fa-building fa-2x text-primary mb-2"></i>
+        <h3>{{ departments.count }}</h3>
+        <p class="text-muted mb-0">Departments</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <i class="fas fa-history me-2"></i>Recent Attendance Sessions
+  </div>
+  <div class="card-body">
+    {% if sessions %}
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Subject</th>
+            <th>Department</th>
+            <th>Semester</th>
+            <th>Created By</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for session in sessions %}
+          <tr>
+            <td>
+              <span class="badge bg-light text-dark">
+                <i class="fas fa-calendar me-1"></i>{{ session.date|date:"M d, Y" }}
+              </span>
+            </td>
+            <td><strong>{{ session.subject.code }}</strong> - {{ session.subject.title|truncatechars:30 }}</td>
+            <td>{{ session.department.name }}</td>
+            <td><span class="badge bg-secondary">Sem {{ session.semester }}</span></td>
+            <td>{{ session.created_by.user.get_full_name }}</td>
+            <td>
+              <a href="{% url 'public:hod_mark_attendance' session.pk %}" class="btn btn-sm btn-outline-warning">
+                <i class="fas fa-edit"></i> Edit
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+      <i class="fas fa-clipboard fa-3x text-muted mb-3"></i>
+      <h5 class="text-muted">No Attendance Sessions Yet</h5>
+      <p class="text-muted">Click "Add Attendance" to create your first session.</p>
+      <a href="{% url 'public:hod_add_attendance' %}" class="btn btn-warning">
+        <i class="fas fa-plus me-2"></i>Add First Attendance
+      </a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<div class="row mt-4">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header">
+        <i class="fas fa-file-medical me-2"></i>Medical Certificates
+      </div>
+      <div class="card-body">
+        <p class="text-muted">Review medical certificates submitted by students with more than 3 leaves.</p>
+        <a href="{% url 'public:hod_medical_certificates' %}" class="btn btn-outline-warning">
+          <i class="fas fa-folder-open me-2"></i>View Certificates
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

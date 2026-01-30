@@ -1,0 +1,158 @@
+{% extends 'adminpanel/base.html' %}
+
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">
+    <i class="fas fa-{% if paper %}edit{% else %}upload{% endif %}"></i>
+    {% if paper %}Edit Question Paper{% else %}Upload Question Paper{% endif %}
+  </h1>
+  <p class="page-subtitle">
+    {% if paper %}Update question paper details{% else %}Upload a new question paper for an exam{% endif %}
+  </p>
+</div>
+
+<div class="row">
+  <div class="col-lg-8">
+    <div class="card">
+      <div class="card-header">
+        <i class="fas fa-file-pdf"></i>Paper Details
+      </div>
+      <div class="card-body">
+        <form method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          
+          {% if not paper %}
+          <div class="mb-3">
+            <label for="exam" class="form-label">Select Exam <span class="text-danger">*</span></label>
+            <select class="form-select" id="exam" name="exam" required>
+              <option value="">Select Exam</option>
+              {% for exam in exams %}
+                <option value="{{ exam.pk }}">
+                  {{ exam.name }} ({{ exam.program.name }} - Sem {{ exam.semester }})
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+          
+          <div class="mb-3">
+            <label for="exam_subject" class="form-label">Select Subject <span class="text-danger">*</span></label>
+            <select class="form-select" id="exam_subject" name="exam_subject" required disabled>
+              <option value="">Select exam first</option>
+            </select>
+          </div>
+          {% else %}
+          <div class="mb-3">
+            <label class="form-label">Exam Subject</label>
+            <input type="text" class="form-control" readonly 
+                   value="{{ paper.exam_subject.exam.name }} - {{ paper.exam_subject.course.code }}">
+          </div>
+          {% endif %}
+          
+          <div class="mb-3">
+            <label for="title" class="form-label">Paper Title <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="title" name="title" 
+                   value="{{ paper.title|default:'' }}" required
+                   placeholder="e.g., CS301 Data Structures - Question Paper">
+          </div>
+          
+          <div class="mb-3">
+            <label for="paper_file" class="form-label">
+              Paper File {% if not paper %}<span class="text-danger">*</span>{% endif %}
+            </label>
+            <input type="file" class="form-control" id="paper_file" name="paper_file"
+                   accept=".pdf,.doc,.docx" {% if not paper %}required{% endif %}>
+            {% if paper %}
+            <small class="text-muted">
+              Current: <a href="{{ paper.paper_file.url }}" target="_blank">{{ paper.paper_file.name }}</a>
+              (Leave empty to keep current file)
+            </small>
+            {% else %}
+            <small class="text-muted">Accepted formats: PDF, DOC, DOCX</small>
+            {% endif %}
+          </div>
+          
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="release_datetime" class="form-label">Release Date & Time <span class="text-danger">*</span></label>
+              <input type="datetime-local" class="form-control" id="release_datetime" name="release_datetime"
+                     value="{% if paper %}{{ paper.release_datetime|date:'Y-m-d\TH:i' }}{% endif %}" required>
+              <small class="text-muted">When colleges can download</small>
+            </div>
+            
+            <div class="col-md-6 mb-3">
+              <label for="status" class="form-label">Status</label>
+              <select class="form-select" id="status" name="status">
+                <option value="draft" {% if paper.status == 'draft' %}selected{% endif %}>Draft</option>
+                <option value="scheduled" {% if paper.status == 'scheduled' %}selected{% endif %}>Scheduled</option>
+                <option value="released" {% if paper.status == 'released' %}selected{% endif %}>Released</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-royal">
+              <i class="fas fa-save me-2"></i>{% if paper %}Update{% else %}Upload{% endif %} Paper
+            </button>
+            <a href="{% url 'adminpanel:question_papers' %}" class="btn btn-outline-secondary">
+              <i class="fas fa-times me-2"></i>Cancel
+            </a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-lg-4">
+    <div class="card">
+      <div class="card-header">
+        <i class="fas fa-info-circle"></i>Information
+      </div>
+      <div class="card-body">
+        <h6>Status Options:</h6>
+        <ul class="mb-3">
+          <li><strong>Draft:</strong> Not visible to colleges</li>
+          <li><strong>Scheduled:</strong> Will auto-release at specified time</li>
+          <li><strong>Released:</strong> Available for download</li>
+        </ul>
+        <p class="mb-0 text-muted">
+          <i class="fas fa-lightbulb me-1"></i>
+          Set to "Scheduled" and the paper will automatically become available at the release time.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const examSelect = document.getElementById('exam');
+  const subjectSelect = document.getElementById('exam_subject');
+  
+  if (examSelect && subjectSelect) {
+    examSelect.addEventListener('change', function() {
+      const examId = this.value;
+      
+      if (examId) {
+        fetch(`{% url 'adminpanel:get_exam_subjects' %}?exam_id=${examId}`)
+          .then(response => response.json())
+          .then(data => {
+            subjectSelect.innerHTML = '<option value="">Select Subject</option>';
+            data.subjects.forEach(function(subject) {
+              const option = document.createElement('option');
+              option.value = subject.id;
+              option.textContent = subject.name;
+              subjectSelect.appendChild(option);
+            });
+            subjectSelect.disabled = false;
+          });
+      } else {
+        subjectSelect.innerHTML = '<option value="">Select exam first</option>';
+        subjectSelect.disabled = true;
+      }
+    });
+  }
+});
+</script>
+{% endblock %}

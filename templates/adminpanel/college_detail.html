@@ -1,0 +1,299 @@
+{% extends "adminpanel/base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div class="page-header mb-0">
+    <h1 class="page-title mb-0"><i class="fas fa-university"></i>{{ college.name }}</h1>
+    <p class="page-subtitle mb-0">{{ college.college_id }} &bull; {{ college.code }}</p>
+  </div>
+  <div>
+    <a href="{% url 'adminpanel:college_edit' college.id %}" class="btn btn-outline-primary me-2">
+      <i class="fas fa-edit me-1"></i> Edit
+    </a>
+    <a href="{% url 'adminpanel:colleges' %}" class="btn btn-outline-secondary">
+      <i class="fas fa-arrow-left me-1"></i> Back
+    </a>
+  </div>
+</div>
+
+<div class="row g-4">
+  <!-- College Info -->
+  <div class="col-lg-4">
+    <div class="card mb-4">
+      <div class="card-header">
+        <i class="fas fa-info-circle"></i> College Information
+      </div>
+      <div class="card-body">
+        <table class="table table-borderless mb-0">
+          <tr>
+            <td class="text-muted" width="40%">Email</td>
+            <td>{{ college.user.email }}</td>
+          </tr>
+          <tr>
+            <td class="text-muted">Phone</td>
+            <td>{{ college.phone|default:'-' }}</td>
+          </tr>
+          <tr>
+            <td class="text-muted">Established</td>
+            <td>{{ college.established_year|default:'-' }}</td>
+          </tr>
+          <tr>
+            <td class="text-muted">Address</td>
+            <td>{{ college.address|default:'-' }}</td>
+          </tr>
+          <tr>
+            <td class="text-muted">Registered</td>
+            <td>{{ college.created_at|date:"M d, Y" }}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+    
+    <!-- Approval Status -->
+    <div class="card mb-4">
+      <div class="card-header">
+        <i class="fas fa-check-circle"></i> Approval Status
+      </div>
+      <div class="card-body">
+        <div class="text-center mb-3">
+          {% if college.status == 'pending' %}
+            <span class="badge bg-warning text-dark fs-6 px-4 py-2"><i class="fas fa-clock me-1"></i>Pending Approval</span>
+          {% elif college.status == 'approved' %}
+            <span class="badge bg-success fs-6 px-4 py-2"><i class="fas fa-check me-1"></i>Approved</span>
+          {% else %}
+            <span class="badge bg-danger fs-6 px-4 py-2"><i class="fas fa-times me-1"></i>Rejected</span>
+          {% endif %}
+        </div>
+        
+        {% if college.status == 'approved' %}
+        <p class="text-muted mb-0 small text-center">
+          Approved on {{ college.approved_at|date:"M d, Y" }}
+          {% if college.approved_by %}by {{ college.approved_by.email }}{% endif %}
+        </p>
+        {% endif %}
+        
+        {% if college.status == 'pending' %}
+        <form method="post" action="{% url 'adminpanel:college_approve' college.id %}" class="mt-3">
+          {% csrf_token %}
+          <div class="d-flex gap-2 justify-content-center">
+            <button type="submit" name="action" value="approve" class="btn btn-success">
+              <i class="fas fa-check me-1"></i> Approve
+            </button>
+            <button type="submit" name="action" value="reject" class="btn btn-danger">
+              <i class="fas fa-times me-1"></i> Reject
+            </button>
+          </div>
+        </form>
+        {% endif %}
+      </div>
+    </div>
+    
+    <!-- Affiliation Status -->
+    <div class="card">
+      <div class="card-header">
+        <i class="fas fa-handshake"></i> Affiliation Status
+      </div>
+      <div class="card-body">
+        <div class="text-center mb-3">
+          {% if college.affiliation_status == 'not_applied' %}
+            <span class="badge bg-secondary fs-6 px-4 py-2">Not Applied</span>
+          {% elif college.affiliation_status == 'pending' %}
+            <span class="badge bg-warning text-dark fs-6 px-4 py-2"><i class="fas fa-clock me-1"></i>Pending</span>
+          {% elif college.affiliation_status == 'approved' %}
+            <span class="badge bg-success fs-6 px-4 py-2"><i class="fas fa-handshake me-1"></i>Affiliated</span>
+          {% else %}
+            <span class="badge bg-danger fs-6 px-4 py-2"><i class="fas fa-times me-1"></i>Rejected</span>
+          {% endif %}
+        </div>
+        
+        {% if college.affiliation_status == 'approved' %}
+        <p class="text-muted mb-0 small text-center">
+          Affiliated on {{ college.affiliation_approved_at|date:"M d, Y" }}
+        </p>
+        <div class="alert alert-success mt-3 mb-0">
+          <i class="fas fa-check-circle me-1"></i> This college can now enroll students.
+        </div>
+        {% endif %}
+        
+        {% if college.affiliation_status == 'pending' %}
+        <form method="post" action="{% url 'adminpanel:college_affiliation' college.id %}" class="mt-3">
+          {% csrf_token %}
+          <div class="d-flex gap-2 justify-content-center">
+            <button type="submit" name="action" value="approve_affiliation" class="btn btn-success">
+              <i class="fas fa-check me-1"></i> Approve Affiliation
+            </button>
+            <button type="submit" name="action" value="reject_affiliation" class="btn btn-danger">
+              <i class="fas fa-times me-1"></i> Reject
+            </button>
+          </div>
+        </form>
+        {% endif %}
+        
+        {% if not college.is_approved and college.affiliation_status == 'not_applied' %}
+        <div class="alert alert-info mt-3 mb-0">
+          <i class="fas fa-info-circle me-1"></i> College must be approved before applying for affiliation.
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  
+  <!-- Departments & Students -->
+  <div class="col-lg-8">
+    <!-- Affiliated Departments -->
+    <div class="card mb-4">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="fas fa-building"></i> Affiliated Departments</span>
+        {% if college.is_approved %}
+        <a href="{% url 'adminpanel:college_programs_affiliation' college.id %}" class="btn btn-sm btn-outline-primary">
+          <i class="fas fa-edit me-1"></i> Manage
+        </a>
+        {% endif %}
+      </div>
+      <div class="card-body">
+        {% if affiliated_programs_by_dept %}
+        <div class="row g-3">
+          {% for dept_id, dept_info in affiliated_programs_by_dept.items %}
+          <div class="col-md-6">
+            <div class="border rounded p-3">
+              <h6 class="mb-1">{{ dept_info.department.name }}</h6>
+              <small class="text-muted">{{ dept_info.department.code }} &bull; {{ dept_info.programs|length }} program{{ dept_info.programs|length|pluralize }}</small>
+              <div class="mt-2">
+                {% for program in dept_info.programs %}
+                  <span class="badge bg-secondary me-1 mb-1">{{ program.name }}</span>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center text-muted py-4">
+          <i class="fas fa-building fa-2x mb-2 d-block"></i>
+          {% if college.is_approved %}
+          <p class="mb-0">No programs selected. <a href="{% url 'adminpanel:college_programs_affiliation' college.id %}">Select programs</a> to apply for affiliation.</p>
+          {% else %}
+          <p class="mb-0">College must be approved before selecting programs.</p>
+          {% endif %}
+        </div>
+        {% endif %}
+      </div>
+    </div>
+    
+    <!-- Faculty -->
+    <div class="card mb-4">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="fas fa-chalkboard-teacher"></i> Faculty Members ({{ total_faculty }})</span>
+        {% if college.is_approved %}
+        <a href="{% url 'adminpanel:faculty_add' %}?college={{ college.id }}" class="btn btn-sm btn-outline-primary">
+          <i class="fas fa-plus me-1"></i> Add Faculty
+        </a>
+        {% endif %}
+      </div>
+      <div class="card-body">
+        {% if faculty %}
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead>
+              <tr>
+                <th>Faculty</th>
+                <th>Email</th>
+                <th>Departments</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for fac in faculty %}
+              <tr>
+                <td>
+                  <strong>{{ fac.user.get_full_name|default:fac.faculty_id }}</strong>
+                  <br><small class="text-muted">{{ fac.faculty_id }}</small>
+                </td>
+                <td>{{ fac.user.email }}</td>
+                <td>
+                  {% for dept in fac.departments.all %}
+                    <span class="badge bg-secondary">{{ dept.name }}</span>
+                  {% empty %}
+                    <span class="text-muted">-</span>
+                  {% endfor %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% if total_faculty > 10 %}
+        <div class="text-center mt-3">
+          <a href="{% url 'adminpanel:faculty_list' %}?college={{ college.id }}" class="btn btn-outline-primary">
+            View All {{ total_faculty }} Faculty
+          </a>
+        </div>
+        {% endif %}
+        {% else %}
+        <div class="text-center text-muted py-4">
+          <i class="fas fa-chalkboard-teacher fa-2x mb-2 d-block"></i>
+          {% if college.is_approved %}
+          <p class="mb-0">No faculty members added yet.</p>
+          {% else %}
+          <p class="mb-0">College must be approved before adding faculty.</p>
+          {% endif %}
+        </div>
+        {% endif %}
+      </div>
+    </div>
+    
+    <!-- Students -->
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="fas fa-user-graduate"></i> Enrolled Students ({{ total_students }})</span>
+        {% if college.can_enroll_students %}
+        <a href="{% url 'adminpanel:student_add' %}?college={{ college.id }}" class="btn btn-sm btn-outline-primary">
+          <i class="fas fa-plus me-1"></i> Add Student
+        </a>
+        {% endif %}
+      </div>
+      <div class="card-body">
+        {% if students %}
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead>
+              <tr>
+                <th>Student</th>
+                <th>Email</th>
+                <th>Program</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for student in students %}
+              <tr>
+                <td>
+                  <strong>{{ student.user.get_full_name|default:student.student_id }}</strong>
+                  <br><small class="text-muted">{{ student.student_id }}</small>
+                </td>
+                <td>{{ student.user.email }}</td>
+                <td>{{ student.program|default:'-' }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% if total_students > 10 %}
+        <div class="text-center mt-3">
+          <a href="{% url 'adminpanel:students' %}?college={{ college.id }}" class="btn btn-outline-primary">
+            View All {{ total_students }} Students
+          </a>
+        </div>
+        {% endif %}
+        {% else %}
+        <div class="text-center text-muted py-4">
+          <i class="fas fa-user-graduate fa-2x mb-2 d-block"></i>
+          {% if college.can_enroll_students %}
+          <p class="mb-0">No students enrolled yet.</p>
+          {% else %}
+          <p class="mb-0">College must be approved and affiliated before enrolling students.</p>
+          {% endif %}
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

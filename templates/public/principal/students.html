@@ -1,0 +1,63 @@
+{% extends 'public/principal/base.html' %}
+
+{% block title %}Students - Principal Portal{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title"><i class="fas fa-user-graduate"></i>All Students</h1>
+  <p class="page-subtitle">All students enrolled in {{ college.name }}</p>
+</div>
+
+<div class="card">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <span><i class="fas fa-list"></i>Student List</span>
+    <span class="badge bg-secondary">{{ all_students|length }} Students</span>
+  </div>
+  <div class="card-body p-0">
+    {% if all_students %}
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead>
+          <tr>
+            <th>Student</th>
+            <th>Email</th>
+            <th>Department</th>
+            <th>Program</th>
+            <th>Roll Number</th>
+            <th>Phone</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for student in all_students %}
+          <tr>
+            <td>
+              <div class="d-flex align-items-center">
+                <div class="user-avatar me-2" style="width: 38px; height: 38px; font-size: 0.8rem;">
+                  {{ student.user.first_name|slice:":1"|upper }}{{ student.user.last_name|slice:":1"|upper }}
+                </div>
+                <div>
+                  <strong>{{ student.user.get_full_name|default:student.user.email }}</strong>
+                  <br><small class="text-muted">{{ student.student_id }}</small>
+                </div>
+              </div>
+            </td>
+            <td>{{ student.user.email }}</td>
+            <td>{{ student.department.name|default:"-" }}</td>
+            <td>{{ student.program.name|default:"-" }}</td>
+            <td><code>{{ student.roll_number|default:"-" }}</code></td>
+            <td>{{ student.phone|default:"-" }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+      <i class="fas fa-user-graduate fa-3x text-muted mb-3"></i>
+      <h5 class="text-muted">No Students</h5>
+      <p class="text-muted">No students enrolled in this college yet.</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

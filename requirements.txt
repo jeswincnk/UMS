@@ -1,0 +1,5 @@
+﻿Django>=4.2
+PyMySQL
+djangorestframework
+python-dotenv
+django-widget-tweaks

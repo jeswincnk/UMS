@@ -1,0 +1,140 @@
+{% extends 'public/college/base.html' %}
+
+{% block title %}Profile - College Portal{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title"><i class="fas fa-building"></i>College Profile</h1>
+  <p class="page-subtitle">View and update your college information</p>
+</div>
+
+<div class="row">
+  <div class="col-lg-8">
+    <div class="card">
+      <div class="card-header">
+        <i class="fas fa-edit"></i>Profile Information
+      </div>
+      <div class="card-body">
+        <form method="post">
+          {% csrf_token %}
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">College Name *</label>
+              <input type="text" name="name" class="form-control" value="{{ college.name }}" required>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">College Code</label>
+              <input type="text" class="form-control" value="{{ college.code|default:'Will be assigned after approval' }}" disabled>
+            </div>
+          </div>
+          
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Email *</label>
+              <input type="email" name="email" class="form-control" value="{{ college.email }}" required>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Phone</label>
+              <input type="text" name="phone" class="form-control" value="{{ college.phone|default:'' }}" placeholder="e.g., +91 9876543210">
+            </div>
+          </div>
+          
+          <div class="mb-3">
+            <label class="form-label">Address</label>
+            <textarea name="address" class="form-control" rows="3" placeholder="Full address of the college">{{ college.address|default:'' }}</textarea>
+          </div>
+          
+          <div class="mb-3">
+            <label class="form-label">Website</label>
+            <input type="url" name="website" class="form-control" value="{{ college.website|default:'' }}" placeholder="https://www.example.edu">
+          </div>
+          
+          <div class="mb-3">
+            <label class="form-label">Description</label>
+            <textarea name="description" class="form-control" rows="4" placeholder="Brief description about your college">{{ college.description|default:'' }}</textarea>
+          </div>
+          
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-royal">
+              <i class="fas fa-save me-2"></i>Save Changes
+            </button>
+            <a href="{% url 'public:college_dashboard' %}" class="btn btn-outline-secondary">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-lg-4">
+    <!-- Status Card -->
+    <div class="card mb-4">
+      <div class="card-header">
+        <i class="fas fa-info-circle"></i>Status
+      </div>
+      <div class="card-body text-center">
+        {% if college.status == 'pending' %}
+        <div class="status-badge status-pending py-2 px-4 mb-3" style="font-size: 1rem;">
+          <i class="fas fa-clock me-2"></i>Pending Approval
+        </div>
+        <p class="text-muted small">Your registration is awaiting review by the university.</p>
+        {% elif college.status == 'approved' %}
+        <div class="status-badge status-approved py-2 px-4 mb-3" style="font-size: 1rem;">
+          <i class="fas fa-check-circle me-2"></i>Approved
+        </div>
+        {% if college.approved_at %}
+        <p class="text-muted small">Approved on {{ college.approved_at|date:"F d, Y" }}</p>
+        {% endif %}
+        {% elif college.status == 'rejected' %}
+        <div class="status-badge status-rejected py-2 px-4 mb-3" style="font-size: 1rem;">
+          <i class="fas fa-times-circle me-2"></i>Rejected
+        </div>
+        {% if college.rejection_reason %}
+        <p class="text-muted small">{{ college.rejection_reason }}</p>
+        {% endif %}
+        {% endif %}
+      </div>
+    </div>
+    
+    {% if college.is_approved %}
+    <!-- Affiliation Status Card -->
+    <div class="card mb-4">
+      <div class="card-header">
+        <i class="fas fa-handshake"></i>Affiliation
+      </div>
+      <div class="card-body text-center">
+        {% if college.affiliation_status == 'not_applied' %}
+        <span class="text-muted"><i class="fas fa-minus-circle fa-2x mb-2 d-block"></i></span>
+        <p class="text-muted small">Not yet applied for affiliation</p>
+        <a href="{% url 'public:college_select_departments' %}" class="btn btn-royal btn-sm">Apply Now</a>
+        {% elif college.affiliation_status == 'pending' %}
+        <span class="text-warning"><i class="fas fa-clock fa-2x mb-2 d-block"></i></span>
+        <p class="text-muted small">Affiliation request pending</p>
+        {% elif college.affiliation_status == 'approved' %}
+        <span class="text-success"><i class="fas fa-check-circle fa-2x mb-2 d-block"></i></span>
+        <p class="text-muted small">Affiliation approved</p>
+        {% if college.affiliation_approved_at %}
+        <small class="text-muted">Since {{ college.affiliation_approved_at|date:"F d, Y" }}</small>
+        {% endif %}
+        {% elif college.affiliation_status == 'rejected' %}
+        <span class="text-danger"><i class="fas fa-times-circle fa-2x mb-2 d-block"></i></span>
+        <p class="text-muted small">Affiliation rejected</p>
+        {% endif %}
+      </div>
+    </div>
+    {% endif %}
+    
+    <!-- Account Card -->
+    <div class="card">
+      <div class="card-header">
+        <i class="fas fa-user"></i>Account
+      </div>
+      <div class="card-body">
+        <p class="mb-2"><strong>Login Email:</strong></p>
+        <p class="text-muted">{{ user.email }}</p>
+        <p class="mb-2"><strong>Registered:</strong></p>
+        <p class="text-muted mb-0">{{ college.created_at|date:"F d, Y" }}</p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

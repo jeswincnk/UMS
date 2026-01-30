@@ -1,0 +1,731 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}University Management System{% endblock %}</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Sans+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --royal-red: #9B1B30;
+      --deep-red: #7A1424;
+      --light-red: #C41E3A;
+      --cream: #FDF8F5;
+      --white: #FFFFFF;
+      --gold: #D4AF37;
+      --text-dark: #2D2D2D;
+      --text-muted: #6B7280;
+      --border-light: #E8E0DC;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Source Sans Pro', sans-serif;
+      color: var(--text-dark);
+      line-height: 1.6;
+    }
+
+    h1, h2, h3, h4, h5 {
+      font-family: 'Playfair Display', serif;
+    }
+
+    /* Navbar */
+    .navbar {
+      background: var(--white);
+      padding: 1rem 0;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+      transition: all 0.3s ease;
+    }
+
+    .navbar.scrolled {
+      padding: 0.5rem 0;
+    }
+
+    .navbar-brand {
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      font-size: 1.5rem;
+      color: var(--royal-red) !important;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .navbar-brand .logo-icon {
+      width: 45px;
+      height: 45px;
+      background: linear-gradient(135deg, var(--royal-red), var(--deep-red));
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--white);
+    }
+
+    .nav-link {
+      color: var(--text-dark) !important;
+      font-weight: 600;
+      padding: 0.5rem 1.2rem !important;
+      margin: 0 0.1rem;
+      border-radius: 6px;
+      transition: all 0.25s ease;
+    }
+
+    .nav-link:hover {
+      color: var(--royal-red) !important;
+      background: rgba(155, 27, 48, 0.05);
+    }
+
+    .nav-link.active {
+      color: var(--royal-red) !important;
+    }
+
+    .btn-login {
+      background: linear-gradient(135deg, var(--royal-red), var(--deep-red));
+      color: var(--white) !important;
+      padding: 0.6rem 1.5rem !important;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .btn-login:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(155, 27, 48, 0.3);
+    }
+
+    /* Hero Section */
+    .hero {
+      background: linear-gradient(135deg, var(--royal-red) 0%, var(--deep-red) 100%);
+      color: var(--white);
+      padding: 100px 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 40%;
+      height: 100%;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='40' fill='rgba(255,255,255,0.05)'/%3E%3C/svg%3E") center/cover;
+      opacity: 0.5;
+    }
+
+    .hero h1 {
+      font-size: 3.2rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero p {
+      font-size: 1.25rem;
+      opacity: 0.9;
+      margin-bottom: 2rem;
+    }
+
+    .btn-hero {
+      background: var(--white);
+      color: var(--royal-red);
+      padding: 0.9rem 2.5rem;
+      border-radius: 8px;
+      font-weight: 700;
+      text-decoration: none;
+      display: inline-block;
+      transition: all 0.3s ease;
+    }
+
+    .btn-hero:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      color: var(--royal-red);
+    }
+
+    .btn-hero-outline {
+      background: transparent;
+      color: var(--white);
+      border: 2px solid var(--white);
+      padding: 0.85rem 2.5rem;
+      border-radius: 8px;
+      font-weight: 700;
+      text-decoration: none;
+      display: inline-block;
+      transition: all 0.3s ease;
+      margin-left: 1rem;
+    }
+
+    .btn-hero-outline:hover {
+      background: var(--white);
+      color: var(--royal-red);
+    }
+
+    /* Sections */
+    .section {
+      padding: 80px 0;
+    }
+
+    .section-light {
+      background: var(--cream);
+    }
+
+    .section-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--text-dark);
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .section-title span {
+      color: var(--royal-red);
+    }
+
+    .section-subtitle {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      text-align: center;
+      max-width: 600px;
+      margin: 0 auto 3rem;
+    }
+
+    /* Feature Cards */
+    .feature-card {
+      background: var(--white);
+      border-radius: 16px;
+      padding: 2rem;
+      text-align: center;
+      box-shadow: 0 5px 30px rgba(0,0,0,0.08);
+      transition: all 0.3s ease;
+      height: 100%;
+      border: 1px solid var(--border-light);
+    }
+
+    .feature-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 40px rgba(155, 27, 48, 0.15);
+    }
+
+    .feature-icon {
+      width: 70px;
+      height: 70px;
+      background: linear-gradient(135deg, var(--royal-red), var(--deep-red));
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+      color: var(--white);
+      font-size: 1.8rem;
+    }
+
+    .feature-card h4 {
+      font-size: 1.3rem;
+      margin-bottom: 1rem;
+      color: var(--text-dark);
+    }
+
+    .feature-card p {
+      color: var(--text-muted);
+      margin-bottom: 0;
+    }
+
+    /* Stats Section */
+    .stats {
+      background: linear-gradient(135deg, var(--royal-red), var(--deep-red));
+      padding: 60px 0;
+    }
+
+    .stat-item {
+      text-align: center;
+      color: var(--white);
+    }
+
+    .stat-number {
+      font-family: 'Playfair Display', serif;
+      font-size: 3rem;
+      font-weight: 700;
+      display: block;
+    }
+
+    .stat-label {
+      font-size: 1.1rem;
+      opacity: 0.9;
+    }
+
+    /* Course Card */
+    .course-card {
+      background: var(--white);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 5px 25px rgba(0,0,0,0.08);
+      transition: all 0.3s ease;
+      border: 1px solid var(--border-light);
+    }
+
+    .course-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 40px rgba(155, 27, 48, 0.12);
+    }
+
+    .course-header {
+      background: linear-gradient(135deg, var(--royal-red), var(--deep-red));
+      color: var(--white);
+      padding: 1.5rem;
+    }
+
+    .course-code {
+      background: rgba(255,255,255,0.2);
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: inline-block;
+      margin-bottom: 0.75rem;
+    }
+
+    .course-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .course-body {
+      padding: 1.5rem;
+    }
+
+    .course-meta {
+      display: flex;
+      justify-content: space-between;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .course-meta i {
+      color: var(--royal-red);
+      margin-right: 5px;
+    }
+
+    /* Contact Form */
+    .contact-form {
+      background: var(--white);
+      border-radius: 16px;
+      padding: 2.5rem;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    }
+
+    .form-control {
+      border: 2px solid var(--border-light);
+      border-radius: 8px;
+      padding: 0.8rem 1rem;
+      font-size: 1rem;
+      transition: all 0.25s ease;
+    }
+
+    .form-control:focus {
+      border-color: var(--royal-red);
+      box-shadow: 0 0 0 3px rgba(155, 27, 48, 0.1);
+    }
+
+    .form-label {
+      font-weight: 600;
+      color: var(--text-dark);
+      margin-bottom: 0.5rem;
+    }
+
+    .btn-submit {
+      background: linear-gradient(135deg, var(--royal-red), var(--deep-red));
+      color: var(--white);
+      padding: 0.9rem 2rem;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      width: 100%;
+    }
+
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(155, 27, 48, 0.3);
+    }
+
+    /* Contact Info */
+    .contact-info-card {
+      background: linear-gradient(135deg, var(--royal-red), var(--deep-red));
+      color: var(--white);
+      border-radius: 16px;
+      padding: 2.5rem;
+      height: 100%;
+    }
+
+    .contact-info-card h4 {
+      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .contact-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 15px;
+      margin-bottom: 1.5rem;
+    }
+
+    .contact-item i {
+      width: 45px;
+      height: 45px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+    }
+
+    .contact-item-text h6 {
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+      font-family: 'Source Sans Pro', sans-serif;
+    }
+
+    .contact-item-text p {
+      opacity: 0.9;
+      margin: 0;
+      font-size: 0.95rem;
+    }
+
+    /* Footer */
+    footer {
+      background: var(--text-dark);
+      color: var(--white);
+      padding: 60px 0 30px;
+    }
+
+    .footer-brand {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 1rem;
+    }
+
+    .footer-brand .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--royal-red);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .footer-text {
+      color: rgba(255,255,255,0.7);
+      font-size: 0.95rem;
+      max-width: 300px;
+    }
+
+    .footer-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      color: var(--white);
+    }
+
+    .footer-links {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .footer-links li {
+      margin-bottom: 0.75rem;
+    }
+
+    .footer-links a {
+      color: rgba(255,255,255,0.7);
+      text-decoration: none;
+      transition: all 0.25s ease;
+    }
+
+    .footer-links a:hover {
+      color: var(--white);
+      padding-left: 5px;
+    }
+
+    .footer-bottom {
+      border-top: 1px solid rgba(255,255,255,0.1);
+      padding-top: 1.5rem;
+      margin-top: 2.5rem;
+      text-align: center;
+      color: rgba(255,255,255,0.6);
+      font-size: 0.9rem;
+    }
+
+    .social-links {
+      display: flex;
+      gap: 10px;
+      margin-top: 1.5rem;
+    }
+
+    .social-links a {
+      width: 40px;
+      height: 40px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--white);
+      transition: all 0.25s ease;
+    }
+
+    .social-links a:hover {
+      background: var(--royal-red);
+      transform: translateY(-3px);
+    }
+
+    /* Page Header */
+    .page-header-section {
+      background: linear-gradient(135deg, var(--royal-red), var(--deep-red));
+      color: var(--white);
+      padding: 80px 0 60px;
+      text-align: center;
+    }
+
+    .page-header-section h1 {
+      font-size: 2.8rem;
+      margin-bottom: 1rem;
+    }
+
+    .page-header-section p {
+      font-size: 1.15rem;
+      opacity: 0.9;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .breadcrumb-custom {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 1.5rem;
+      font-size: 0.95rem;
+    }
+
+    .breadcrumb-custom a {
+      color: rgba(255,255,255,0.8);
+      text-decoration: none;
+    }
+
+    .breadcrumb-custom a:hover {
+      color: var(--white);
+    }
+
+    .breadcrumb-custom span {
+      color: rgba(255,255,255,0.6);
+    }
+
+    /* About Page */
+    .about-image {
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+    }
+
+    .about-image img {
+      width: 100%;
+      height: auto;
+    }
+
+    .about-content h2 {
+      font-size: 2.2rem;
+      margin-bottom: 1.5rem;
+      color: var(--text-dark);
+    }
+
+    .about-content p {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      margin-bottom: 1rem;
+    }
+
+    .value-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 15px;
+      margin-bottom: 1.5rem;
+    }
+
+    .value-icon {
+      width: 50px;
+      height: 50px;
+      background: rgba(155, 27, 48, 0.1);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--royal-red);
+      font-size: 1.3rem;
+      flex-shrink: 0;
+    }
+
+    .value-item h5 {
+      font-size: 1.1rem;
+      margin-bottom: 0.25rem;
+      font-family: 'Source Sans Pro', sans-serif;
+      font-weight: 600;
+    }
+
+    .value-item p {
+      margin: 0;
+      font-size: 0.95rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .hero h1 {
+        font-size: 2.2rem;
+      }
+
+      .hero p {
+        font-size: 1rem;
+      }
+
+      .btn-hero-outline {
+        margin-left: 0;
+        margin-top: 1rem;
+      }
+
+      .section-title {
+        font-size: 2rem;
+      }
+
+      .stat-number {
+        font-size: 2.2rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="{% url 'public:index' %}">
+        <span class="logo-icon"><i class="fas fa-university"></i></span>
+        UMS
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto align-items-center">
+          <li class="nav-item">
+            <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="{% url 'public:index' %}">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if 'about' in request.path %}active{% endif %}" href="{% url 'public:about' %}">About</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if 'courses' in request.path %}active{% endif %}" href="{% url 'public:courses' %}">Courses</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if 'contact' in request.path %}active{% endif %}" href="{% url 'public:contact' %}">Contact</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if 'register' in request.path %}active{% endif %}" href="{% url 'public:college_register' %}">
+              <i class="fas fa-university me-1"></i> Register College
+            </a>
+          </li>
+          <li class="nav-item ms-2">
+            <a class="nav-link btn-login" href="{% url 'login' %}">
+              <i class="fas fa-sign-in-alt me-1"></i> Login
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  {% block content %}{% endblock %}
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-4 mb-4">
+          <div class="footer-brand">
+            <span class="logo-icon"><i class="fas fa-university"></i></span>
+            UMS
+          </div>
+          <p class="footer-text">
+            Empowering education through technology. Our University Management System provides comprehensive solutions for modern academic institutions.
+          </p>
+          <div class="social-links">
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-linkedin-in"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+          </div>
+        </div>
+        <div class="col-lg-2 col-md-4 mb-4">
+          <h5 class="footer-title">Quick Links</h5>
+          <ul class="footer-links">
+            <li><a href="{% url 'public:index' %}">Home</a></li>
+            <li><a href="{% url 'public:about' %}">About Us</a></li>
+            <li><a href="{% url 'public:courses' %}">Courses</a></li>
+            <li><a href="{% url 'public:contact' %}">Contact</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-2 col-md-4 mb-4">
+          <h5 class="footer-title">Resources</h5>
+          <ul class="footer-links">
+            <li><a href="{% url 'login' %}">Student Portal</a></li>
+            <li><a href="{% url 'login' %}">Faculty Portal</a></li>
+            <li><a href="#">Library</a></li>
+            <li><a href="#">Calendar</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-4 col-md-4 mb-4">
+          <h5 class="footer-title">Contact Info</h5>
+          <ul class="footer-links">
+            <li><i class="fas fa-map-marker-alt me-2"></i> 123 University Ave, City</li>
+            <li><i class="fas fa-phone me-2"></i> +1 (555) 123-4567</li>
+            <li><i class="fas fa-envelope me-2"></i> info@university.edu</li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p class="mb-0">&copy; 2026 University Management System. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Navbar scroll effect
+    window.addEventListener('scroll', function() {
+      const navbar = document.querySelector('.navbar');
+      if (window.scrollY > 50) {
+        navbar.classList.add('scrolled');
+      } else {
+        navbar.classList.remove('scrolled');
+      }
+    });
+  </script>
+</body>
+
+</html>

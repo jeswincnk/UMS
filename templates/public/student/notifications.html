@@ -1,0 +1,100 @@
+{% extends 'public/student/base.html' %}
+
+{% block title %}Exam Notifications - Student Portal{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title"><i class="fas fa-bell"></i> Exam Notifications</h1>
+  <p class="page-subtitle">Stay updated with examination announcements</p>
+</div>
+
+<!-- University Notifications -->
+<div class="card mb-4">
+  <div class="card-header bg-primary text-white">
+    <i class="fas fa-university me-2"></i>University Exam Notifications
+  </div>
+  <div class="card-body">
+    {% if university_notifications %}
+    <div class="list-group list-group-flush">
+      {% for notif in university_notifications %}
+      <div class="list-group-item px-0 {% if forloop.first %}pt-0{% endif %}">
+        <div class="d-flex">
+          <div class="flex-shrink-0 me-3">
+            {% if notif.priority == 'urgent' %}
+            <span class="badge bg-danger p-3"><i class="fas fa-exclamation-circle fa-lg"></i></span>
+            {% elif notif.priority == 'important' %}
+            <span class="badge bg-warning text-dark p-3"><i class="fas fa-star fa-lg"></i></span>
+            {% else %}
+            <span class="badge bg-info p-3"><i class="fas fa-info fa-lg"></i></span>
+            {% endif %}
+          </div>
+          <div class="flex-grow-1">
+            <div class="d-flex justify-content-between align-items-start">
+              <h6 class="mb-1">{{ notif.title }}</h6>
+              <small class="text-muted">{{ notif.created_at|date:"M d" }}</small>
+            </div>
+            <p class="mb-1">{{ notif.content }}</p>
+            {% if notif.exam_date %}
+            <span class="badge bg-light text-dark">
+              <i class="fas fa-calendar me-1"></i>Exam Date: {{ notif.exam_date|date:"F d, Y" }}
+            </span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-4">
+      <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+      <p class="text-muted mb-0">No university notifications at this time.</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- College Notifications -->
+<div class="card">
+  <div class="card-header bg-info text-white">
+    <i class="fas fa-school me-2"></i>College Exam Notifications
+  </div>
+  <div class="card-body">
+    {% if college_notifications %}
+    <div class="list-group list-group-flush">
+      {% for notif in college_notifications %}
+      <div class="list-group-item px-0 {% if forloop.first %}pt-0{% endif %}">
+        <div class="d-flex">
+          <div class="flex-shrink-0 me-3">
+            {% if notif.priority == 'urgent' %}
+            <span class="badge bg-danger p-3"><i class="fas fa-exclamation-circle fa-lg"></i></span>
+            {% elif notif.priority == 'important' %}
+            <span class="badge bg-warning text-dark p-3"><i class="fas fa-star fa-lg"></i></span>
+            {% else %}
+            <span class="badge bg-secondary p-3"><i class="fas fa-bullhorn fa-lg"></i></span>
+            {% endif %}
+          </div>
+          <div class="flex-grow-1">
+            <div class="d-flex justify-content-between align-items-start">
+              <h6 class="mb-1">{{ notif.title }}</h6>
+              <small class="text-muted">{{ notif.created_at|date:"M d" }}</small>
+            </div>
+            <p class="mb-1">{{ notif.content }}</p>
+            {% if notif.exam_date %}
+            <span class="badge bg-light text-dark">
+              <i class="fas fa-calendar me-1"></i>Exam Date: {{ notif.exam_date|date:"F d, Y" }}
+            </span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-4">
+      <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+      <p class="text-muted mb-0">No college notifications at this time.</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

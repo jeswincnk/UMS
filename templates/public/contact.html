@@ -1,0 +1,193 @@
+{% extends "public/base.html" %}
+{% block title %}Contact Us - University Management System{% endblock %}
+{% block content %}
+<!-- Page Header -->
+<section class="page-header-section" style="margin-top: 76px;">
+  <div class="container">
+    <h1>Contact Us</h1>
+    <p>Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible.</p>
+    <div class="breadcrumb-custom">
+      <a href="{% url 'public:index' %}">Home</a>
+      <span>/</span>
+      <span>Contact</span>
+    </div>
+  </div>
+</section>
+
+<!-- Contact Section -->
+<section class="section">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-7">
+        <div class="contact-form">
+          <h3 style="margin-bottom: 1.5rem; font-family: 'Playfair Display', serif;">Send Us a Message</h3>
+          
+          {% if messages %}
+          {% for message in messages %}
+          <div class="alert alert-{% if message.tags == 'success' %}success{% else %}danger{% endif %} mb-4">
+            <i class="fas fa-{% if message.tags == 'success' %}check-circle{% else %}exclamation-circle{% endif %} me-2"></i>
+            {{ message }}
+          </div>
+          {% endfor %}
+          {% endif %}
+          
+          <form method="post" action="">
+            {% csrf_token %}
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">Full Name *</label>
+                <input type="text" name="name" class="form-control" placeholder="Your full name" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Email Address *</label>
+                <input type="email" name="email" class="form-control" placeholder="your.email@example.com" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Phone Number</label>
+                <input type="tel" name="phone" class="form-control" placeholder="+1 (555) 000-0000">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Subject *</label>
+                <select name="subject" class="form-control" required>
+                  <option value="">Select a subject</option>
+                  <option value="admissions">Admissions Inquiry</option>
+                  <option value="courses">Course Information</option>
+                  <option value="fees">Fee Structure</option>
+                  <option value="technical">Technical Support</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div class="col-12">
+                <label class="form-label">Message *</label>
+                <textarea name="message" class="form-control" rows="5" placeholder="Write your message here..." required></textarea>
+              </div>
+              <div class="col-12">
+                <button type="submit" class="btn-submit">
+                  <i class="fas fa-paper-plane me-2"></i>Send Message
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="col-lg-5">
+        <div class="contact-info-card">
+          <h4>Get in Touch</h4>
+          <p style="opacity: 0.9; margin-bottom: 2rem;">Feel free to reach out to us through any of the following channels.</p>
+          
+          <div class="contact-item">
+            <i class="fas fa-map-marker-alt"></i>
+            <div class="contact-item-text">
+              <h6>Our Address</h6>
+              <p>123 University Avenue<br>Academic City, State 12345</p>
+            </div>
+          </div>
+          
+          <div class="contact-item">
+            <i class="fas fa-phone-alt"></i>
+            <div class="contact-item-text">
+              <h6>Phone Number</h6>
+              <p>+1 (555) 123-4567<br>+1 (555) 987-6543</p>
+            </div>
+          </div>
+          
+          <div class="contact-item">
+            <i class="fas fa-envelope"></i>
+            <div class="contact-item-text">
+              <h6>Email Address</h6>
+              <p>info@university.edu<br>admissions@university.edu</p>
+            </div>
+          </div>
+          
+          <div class="contact-item">
+            <i class="fas fa-clock"></i>
+            <div class="contact-item-text">
+              <h6>Office Hours</h6>
+              <p>Mon - Fri: 8:00 AM - 5:00 PM<br>Sat: 9:00 AM - 1:00 PM</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Map Section -->
+<section class="section-light" style="padding: 0;">
+  <div class="container-fluid p-0">
+    <div style="background: linear-gradient(135deg, #f5f5f5, #e8e8e8); height: 400px; display: flex; align-items: center; justify-content: center;">
+      <div class="text-center">
+        <i class="fas fa-map-marked-alt fa-4x mb-3" style="color: var(--royal-red);"></i>
+        <h4>Find Us on the Map</h4>
+        <p class="text-muted">123 University Avenue, Academic City</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ Section -->
+<section class="section">
+  <div class="container">
+    <h2 class="section-title">Frequently Asked <span>Questions</span></h2>
+    <p class="section-subtitle">Find answers to commonly asked questions about our university.</p>
+    
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="accordion" id="faqAccordion">
+          <div class="accordion-item" style="border: 1px solid var(--border-light); border-radius: 12px; margin-bottom: 1rem; overflow: hidden;">
+            <h2 class="accordion-header">
+              <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1" style="font-weight: 600; background: var(--cream);">
+                How do I apply for admission?
+              </button>
+            </h2>
+            <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+              <div class="accordion-body">
+                You can apply for admission by filling out our online application form. Visit the admissions page, create an account, and submit your documents along with the application fee.
+              </div>
+            </div>
+          </div>
+          
+          <div class="accordion-item" style="border: 1px solid var(--border-light); border-radius: 12px; margin-bottom: 1rem; overflow: hidden;">
+            <h2 class="accordion-header">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2" style="font-weight: 600; background: var(--cream);">
+                What are the fee payment options?
+              </button>
+            </h2>
+            <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+              <div class="accordion-body">
+                We accept various payment methods including bank transfers, credit/debit cards, and online payment gateways. Installment plans are also available for eligible students.
+              </div>
+            </div>
+          </div>
+          
+          <div class="accordion-item" style="border: 1px solid var(--border-light); border-radius: 12px; margin-bottom: 1rem; overflow: hidden;">
+            <h2 class="accordion-header">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3" style="font-weight: 600; background: var(--cream);">
+                Are scholarships available?
+              </button>
+            </h2>
+            <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+              <div class="accordion-body">
+                Yes, we offer merit-based and need-based scholarships. Please visit our financial aid office or contact us for more information about eligibility criteria.
+              </div>
+            </div>
+          </div>
+          
+          <div class="accordion-item" style="border: 1px solid var(--border-light); border-radius: 12px; overflow: hidden;">
+            <h2 class="accordion-header">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4" style="font-weight: 600; background: var(--cream);">
+                How can I access online learning resources?
+              </button>
+            </h2>
+            <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+              <div class="accordion-body">
+                Enrolled students can access our online learning portal using their student credentials. The portal includes course materials, video lectures, assignments, and more.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

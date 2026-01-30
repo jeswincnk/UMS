@@ -1,0 +1,77 @@
+{% extends 'public/principal/base.html' %}
+
+{% block title %}Faculty - Principal Portal{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title"><i class="fas fa-chalkboard-teacher"></i>All Faculty</h1>
+  <p class="page-subtitle">All faculty members in {{ college.name }}</p>
+</div>
+
+<div class="card">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <span><i class="fas fa-list"></i>Faculty List</span>
+    <span class="badge bg-secondary">{{ all_faculty|length }} Members</span>
+  </div>
+  <div class="card-body p-0">
+    {% if all_faculty %}
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead>
+          <tr>
+            <th>Faculty</th>
+            <th>Email</th>
+            <th>Designation</th>
+            <th>Departments</th>
+            <th>Qualification</th>
+            <th>Phone</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for fac in all_faculty %}
+          <tr>
+            <td>
+              <div class="d-flex align-items-center">
+                <div class="user-avatar me-2" style="width: 38px; height: 38px; font-size: 0.8rem;">
+                  {{ fac.user.first_name|slice:":1"|upper }}{{ fac.user.last_name|slice:":1"|upper }}
+                </div>
+                <div>
+                  <strong>{{ fac.user.get_full_name|default:fac.user.email }}</strong>
+                  <br><small class="text-muted">{{ fac.faculty_id }}</small>
+                </div>
+              </div>
+            </td>
+            <td>{{ fac.user.email }}</td>
+            <td>
+              {% if fac.designation == 'principal' %}
+                <span class="badge bg-danger">Principal</span>
+              {% elif fac.designation == 'hod' %}
+                <span class="badge bg-warning text-dark">HOD</span>
+              {% else %}
+                <span class="badge bg-primary">Faculty</span>
+              {% endif %}
+            </td>
+            <td>
+              {% for dept in fac.departments.all %}
+                <span class="badge bg-light text-dark">{{ dept.name }}</span>
+              {% empty %}
+                -
+              {% endfor %}
+            </td>
+            <td>{{ fac.qualification|default:"-" }}</td>
+            <td>{{ fac.phone|default:"-" }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+      <i class="fas fa-chalkboard-teacher fa-3x text-muted mb-3"></i>
+      <h5 class="text-muted">No Faculty Members</h5>
+      <p class="text-muted">No faculty members in this college yet.</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

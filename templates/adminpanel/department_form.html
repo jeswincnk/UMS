@@ -1,0 +1,44 @@
+{% extends "adminpanel/base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div class="page-header mb-0">
+    <h1 class="page-title mb-0"><i class="fas fa-building"></i>{{ action }} Department</h1>
+  </div>
+  <a href="{% url 'adminpanel:departments' %}" class="btn btn-outline-royal">
+    <i class="fas fa-arrow-left me-2"></i>Back to Departments
+  </a>
+</div>
+
+<div class="card">
+  <div class="card-body p-4">
+    <form method="post">
+      {% csrf_token %}
+      <div class="row g-3">
+        <div class="col-md-8">
+          <label class="form-label"><i class="fas fa-building me-1"></i>Department Name *</label>
+          <input type="text" name="name" class="form-control" required value="{{ department.name|default:'' }}" placeholder="e.g., Computer Science">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label"><i class="fas fa-hashtag me-1"></i>Code *</label>
+          <input type="text" name="code" class="form-control" required value="{{ department.code|default:'' }}" placeholder="e.g., CS">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label"><i class="fas fa-user-tie me-1"></i>Head of Department</label>
+          <select name="head" class="form-select">
+            <option value="">Select Head</option>
+            {% for fac in faculty %}
+            <option value="{{ fac.id }}" {% if department.head_id == fac.id %}selected{% endif %}>{{ fac.user.get_full_name|default:fac.user.email }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-12 mt-4">
+          <button type="submit" class="btn btn-royal">
+            <i class="fas fa-save me-2"></i>{{ action }} Department
+          </button>
+          <a href="{% url 'adminpanel:departments' %}" class="btn btn-outline-royal ms-2">Cancel</a>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

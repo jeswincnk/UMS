@@ -1,0 +1,89 @@
+{% extends 'public/hod/base.html' %}
+
+{% block title %}Add Notification - HOD Portal{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title"><i class="fas fa-plus-circle"></i> Create Notification</h1>
+  <p class="page-subtitle">Send exam notification to students and faculty</p>
+</div>
+
+<div class="row">
+  <div class="col-lg-8">
+    <div class="card">
+      <div class="card-header">
+        <i class="fas fa-edit me-2"></i>Notification Details
+      </div>
+      <div class="card-body">
+        <form method="post">
+          {% csrf_token %}
+          
+          <div class="mb-3">
+            <label class="form-label"><i class="fas fa-heading me-1"></i>Title *</label>
+            <input type="text" name="title" class="form-control" placeholder="e.g., Mid-Term Examination Schedule" required>
+          </div>
+          
+          <div class="mb-3">
+            <label class="form-label"><i class="fas fa-align-left me-1"></i>Content *</label>
+            <textarea name="content" class="form-control" rows="5" placeholder="Enter the notification content..." required></textarea>
+          </div>
+          
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label class="form-label"><i class="fas fa-exclamation-triangle me-1"></i>Priority</label>
+              <select name="priority" class="form-select">
+                <option value="normal">Normal</option>
+                <option value="important">Important</option>
+                <option value="urgent">Urgent</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label"><i class="fas fa-calendar me-1"></i>Exam Date (Optional)</label>
+              <input type="date" name="exam_date" class="form-control">
+            </div>
+          </div>
+          
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-warning">
+              <i class="fas fa-paper-plane me-2"></i>Publish Notification
+            </button>
+            <a href="{% url 'public:hod_notifications' %}" class="btn btn-outline-secondary">
+              <i class="fas fa-times me-2"></i>Cancel
+            </a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-lg-4">
+    <div class="card">
+      <div class="card-header">
+        <i class="fas fa-info-circle me-2"></i>Who Will See This?
+      </div>
+      <div class="card-body">
+        <ul class="list-unstyled mb-0">
+          <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Students of {{ college.name }}</li>
+          <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Faculty members</li>
+          <li><i class="fas fa-check text-success me-2"></i>Principal</li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="card mt-3">
+      <div class="card-header">
+        <i class="fas fa-lightbulb me-2"></i>Tips
+      </div>
+      <div class="card-body">
+        <small class="text-muted">
+          <ul class="ps-3 mb-0">
+            <li>Use clear and concise titles</li>
+            <li>Include all relevant dates and times</li>
+            <li>Set priority to "Urgent" for time-sensitive notices</li>
+          </ul>
+        </small>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

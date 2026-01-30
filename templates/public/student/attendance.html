@@ -1,0 +1,168 @@
+{% extends 'public/student/base.html' %}
+{% load custom_filters %}
+
+{% block title %}My Attendance - Student Portal{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title"><i class="fas fa-clipboard-check"></i> My Attendance</h1>
+  <p class="page-subtitle">Track your attendance records across all subjects</p>
+</div>
+
+<!-- Leave Warning -->
+{% if needs_certificate and not existing_cert %}
+<div class="alert alert-danger mb-4">
+  <div class="d-flex align-items-center">
+    <i class="fas fa-exclamation-triangle fa-2x me-3"></i>
+    <div>
+      <h5 class="mb-1">Medical Certificate Required!</h5>
+      <p class="mb-2">You have taken <strong>{{ month_leaves }} leaves</strong> in {{ current_month }} {{ current_year }}. Since you exceeded 3 leaves, you must submit a medical certificate.</p>
+      <a href="{% url 'public:student_submit_medical_certificate' %}" class="btn btn-danger btn-sm">
+        <i class="fas fa-upload me-2"></i>Submit Medical Certificate
+      </a>
+    </div>
+  </div>
+</div>
+{% elif existing_cert %}
+<div class="alert {% if existing_cert.status == 'approved' %}alert-success{% elif existing_cert.status == 'rejected' %}alert-danger{% else %}alert-warning{% endif %} mb-4">
+  <i class="fas fa-file-medical me-2"></i>
+  <strong>Medical Certificate for {{ current_month }}:</strong> 
+  {% if existing_cert.status == 'pending' %}
+  Pending review by HOD
+  {% elif existing_cert.status == 'approved' %}
+  Approved
+  {% else %}
+  Rejected - {{ existing_cert.rejection_reason|default:"No reason provided" }}
+  {% endif %}
+</div>
+{% endif %}
+
+<!-- Summary Cards -->
+<div class="row g-4 mb-4">
+  <div class="col-md-3">
+    <div class="card text-center bg-primary text-white">
+      <div class="card-body">
+        <i class="fas fa-calendar-check fa-2x mb-2"></i>
+        <h3>{{ attendances|length }}</h3>
+        <p class="mb-0">Total Records</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card text-center bg-success text-white">
+      <div class="card-body">
+        <i class="fas fa-check fa-2x mb-2"></i>
+        <h3>{% widthratio attendances|filter_by_status:"present"|length attendances|length 100 %}%</h3>
+        <p class="mb-0">Present Rate</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card text-center bg-danger text-white">
+      <div class="card-body">
+        <i class="fas fa-times fa-2x mb-2"></i>
+        <h3>{{ attendances|filter_by_status:"absent"|length }}</h3>
+        <p class="mb-0">Absent Days</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card text-center bg-warning text-dark">
+      <div class="card-body">
+        <i class="fas fa-plane fa-2x mb-2"></i>
+        <h3>{{ month_leaves }}</h3>
+        <p class="mb-0">Leaves ({{ current_month }})</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Subject-wise Attendance -->
+<div class="card mb-4">
+  <div class="card-header">
+    <i class="fas fa-book me-2"></i>Subject-wise Attendance
+  </div>
+  <div class="card-body">
+    {% if subject_stats %}
+    <div class="row">
+      {% for code, stats in subject_stats.items %}
+      <div class="col-md-6 col-lg-4 mb-3">
+        <div class="card h-100 border">
+          <div class="card-body">
+            <h6 class="text-primary mb-2">{{ code }}</h6>
+            <p class="small text-muted mb-2">{{ stats.name|truncatechars:30 }}</p>
+            <div class="progress mb-2" style="height: 20px;">
+              <div class="progress-bar {% if stats.percentage >= 75 %}bg-success{% elif stats.percentage >= 50 %}bg-warning{% else %}bg-danger{% endif %}" 
+                   role="progressbar" style="width: {{ stats.percentage }}%">
+                {{ stats.percentage }}%
+              </div>
+            </div>
+            <div class="d-flex justify-content-between small">
+              <span class="text-success">Present: {{ stats.present }}</span>
+              <span class="text-danger">Absent: {{ stats.absent }}</span>
+              <span class="text-warning">Leave: {{ stats.leave }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-4">
+      <i class="fas fa-chart-bar fa-3x text-muted mb-3"></i>
+      <p class="text-muted">No attendance data available yet.</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Recent Attendance Records -->
+<div class="card">
+  <div class="card-header">
+    <i class="fas fa-history me-2"></i>Recent Attendance Records
+  </div>
+  <div class="card-body">
+    {% if attendances %}
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Subject</th>
+            <th>Status</th>
+            <th>Remarks</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for att in attendances %}
+          <tr>
+            <td>{{ att.session.date|date:"M d, Y" }}</td>
+            <td>
+              <strong>{{ att.session.subject.code }}</strong>
+              <br><small class="text-muted">{{ att.session.subject.title|truncatechars:25 }}</small>
+            </td>
+            <td>
+              {% if att.status == 'present' %}
+              <span class="badge bg-success"><i class="fas fa-check me-1"></i>Present</span>
+              {% elif att.status == 'absent' %}
+              <span class="badge bg-danger"><i class="fas fa-times me-1"></i>Absent</span>
+              {% else %}
+              <span class="badge bg-warning text-dark"><i class="fas fa-plane me-1"></i>Leave</span>
+              {% endif %}
+            </td>
+            <td><small class="text-muted">{{ att.remarks|default:"-" }}</small></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+      <i class="fas fa-clipboard fa-3x text-muted mb-3"></i>
+      <h5 class="text-muted">No Attendance Records</h5>
+      <p class="text-muted">Your attendance records will appear here once marked.</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,147 @@
+{% extends 'public/principal/base.html' %}
+
+{% block title %}Dashboard - Principal Portal{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title"><i class="fas fa-th-large"></i>Welcome, {{ faculty.user.first_name }}!</h1>
+  <p class="page-subtitle">Principal Dashboard - {{ college.name }}</p>
+</div>
+
+<div class="row g-4 mb-4">
+  <div class="col-md-3">
+    <div class="card card-stats">
+      <div class="stat-icon">
+        <i class="fas fa-building"></i>
+      </div>
+      <div class="stat-value">{{ total_departments }}</div>
+      <div class="stat-label">Departments</div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card card-stats">
+      <div class="stat-icon">
+        <i class="fas fa-user-tie"></i>
+      </div>
+      <div class="stat-value">{{ total_hods }}</div>
+      <div class="stat-label">HODs</div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card card-stats">
+      <div class="stat-icon">
+        <i class="fas fa-chalkboard-teacher"></i>
+      </div>
+      <div class="stat-value">{{ total_faculty }}</div>
+      <div class="stat-label">Total Faculty</div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card card-stats">
+      <div class="stat-icon">
+        <i class="fas fa-user-graduate"></i>
+      </div>
+      <div class="stat-value">{{ total_students }}</div>
+      <div class="stat-label">Total Students</div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-6">
+    <div class="card">
+      <div class="card-header">
+        <i class="fas fa-university"></i>College Information
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-6 mb-3">
+            <label class="form-label text-muted small">College Name</label>
+            <p class="mb-0 fw-medium">{{ college.name }}</p>
+          </div>
+          <div class="col-6 mb-3">
+            <label class="form-label text-muted small">College Code</label>
+            <p class="mb-0 fw-medium"><code>{{ college.code }}</code></p>
+          </div>
+          <div class="col-6 mb-3">
+            <label class="form-label text-muted small">Email</label>
+            <p class="mb-0 fw-medium">{{ college.email|default:"-" }}</p>
+          </div>
+          <div class="col-6 mb-3">
+            <label class="form-label text-muted small">Phone</label>
+            <p class="mb-0 fw-medium">{{ college.phone|default:"-" }}</p>
+          </div>
+          <div class="col-12 mb-3">
+            <label class="form-label text-muted small">Address</label>
+            <p class="mb-0 fw-medium">{{ college.address|default:"-" }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-lg-6">
+    <div class="card">
+      <div class="card-header">
+        <i class="fas fa-tasks"></i>Quick Actions
+      </div>
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-6">
+            <a href="{% url 'public:principal_departments' %}" class="btn btn-outline-secondary w-100 py-3">
+              <i class="fas fa-building d-block mb-2 fa-2x"></i>
+              View Departments
+            </a>
+          </div>
+          <div class="col-6">
+            <a href="{% url 'public:principal_faculty' %}" class="btn btn-outline-secondary w-100 py-3">
+              <i class="fas fa-chalkboard-teacher d-block mb-2 fa-2x"></i>
+              View Faculty
+            </a>
+          </div>
+          <div class="col-6">
+            <a href="{% url 'public:principal_students' %}" class="btn btn-outline-secondary w-100 py-3">
+              <i class="fas fa-user-graduate d-block mb-2 fa-2x"></i>
+              View Students
+            </a>
+          </div>
+          <div class="col-6">
+            <a href="{% url 'public:principal_profile' %}" class="btn btn-outline-secondary w-100 py-3">
+              <i class="fas fa-user d-block mb-2 fa-2x"></i>
+              My Profile
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header">
+        <i class="fas fa-id-card"></i>Your Information
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-3 mb-3">
+            <label class="form-label text-muted small">Name</label>
+            <p class="mb-0 fw-medium">{{ faculty.user.get_full_name }}</p>
+          </div>
+          <div class="col-md-3 mb-3">
+            <label class="form-label text-muted small">Email</label>
+            <p class="mb-0 fw-medium">{{ faculty.user.email }}</p>
+          </div>
+          <div class="col-md-3 mb-3">
+            <label class="form-label text-muted small">Faculty ID</label>
+            <p class="mb-0 fw-medium"><code>{{ faculty.faculty_id }}</code></p>
+          </div>
+          <div class="col-md-3 mb-3">
+            <label class="form-label text-muted small">Designation</label>
+            <p class="mb-0"><span class="badge bg-danger">Principal</span></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

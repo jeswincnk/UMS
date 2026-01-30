@@ -1,0 +1,70 @@
+{% extends "adminpanel/base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div class="page-header mb-0">
+    <h1 class="page-title mb-0"><i class="fas fa-chalkboard-teacher"></i>{{ action }} Faculty</h1>
+  </div>
+  <a href="{% url 'adminpanel:faculty_list' %}" class="btn btn-outline-royal">
+    <i class="fas fa-arrow-left me-2"></i>Back to Faculty
+  </a>
+</div>
+
+<div class="card">
+  <div class="card-body p-4">
+    <form method="post">
+      {% csrf_token %}
+      <div class="row g-3">
+        {% if action == 'Edit' %}
+        <div class="col-md-6">
+          <label class="form-label"><i class="fas fa-id-card me-1"></i>Faculty ID</label>
+          <input type="text" class="form-control" value="{{ faculty.faculty_id }}" disabled readonly>
+          <small class="text-muted">Auto-generated ID cannot be changed</small>
+        </div>
+        {% endif %}
+        <div class="col-md-6">
+          <label class="form-label"><i class="fas fa-envelope me-1"></i>Email *</label>
+          <input type="email" name="email" class="form-control" required value="{{ faculty.user.email|default:'' }}">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label"><i class="fas fa-user me-1"></i>First Name</label>
+          <input type="text" name="first_name" class="form-control" value="{{ faculty.user.first_name|default:'' }}">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label"><i class="fas fa-user me-1"></i>Last Name</label>
+          <input type="text" name="last_name" class="form-control" value="{{ faculty.user.last_name|default:'' }}">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label"><i class="fas fa-building me-1"></i>Department</label>
+          <select name="department" class="form-select">
+            <option value="">Select Department</option>
+            {% for dept in departments %}
+            <option value="{{ dept.id }}" {% if faculty.department_id == dept.id %}selected{% endif %}>{{ dept.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label"><i class="fas fa-graduation-cap me-1"></i>Qualification</label>
+          <input type="text" name="qualification" class="form-control" value="{{ faculty.qualification|default:'' }}" placeholder="e.g., Ph.D. in Computer Science">
+        </div>
+        {% if action == 'Add' %}
+        <div class="col-md-6">
+          <label class="form-label"><i class="fas fa-lock me-1"></i>Password *</label>
+          <input type="password" name="password" class="form-control" required>
+        </div>
+        <div class="col-12">
+          <div class="alert alert-info mb-0">
+            <i class="fas fa-info-circle me-2"></i>Faculty ID will be auto-generated after creation (e.g., FAC0001)
+          </div>
+        </div>
+        {% endif %}
+        <div class="col-12 mt-4">
+          <button type="submit" class="btn btn-royal">
+            <i class="fas fa-save me-2"></i>{{ action }} Faculty
+          </button>
+          <a href="{% url 'adminpanel:faculty_list' %}" class="btn btn-outline-royal ms-2">Cancel</a>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

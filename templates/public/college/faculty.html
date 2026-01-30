@@ -1,0 +1,183 @@
+{% extends 'public/college/base.html' %}
+
+{% block title %}Faculty - College Portal{% endblock %}
+
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-center">
+  <div>
+    <h1 class="page-title"><i class="fas fa-chalkboard-teacher"></i>Faculty</h1>
+    <p class="page-subtitle">Manage faculty members in your college</p>
+  </div>
+  <a href="{% url 'public:college_add_faculty' %}" class="btn btn-royal">
+    <i class="fas fa-user-plus me-2"></i>Add Faculty
+  </a>
+</div>
+
+<!-- Summary Cards -->
+<div class="row g-4 mb-4">
+  <div class="col-md-3">
+    <div class="card card-stats">
+      <div class="stat-icon">
+        <i class="fas fa-users"></i>
+      </div>
+      <div class="stat-value">{{ faculty_count }}</div>
+      <div class="stat-label">Faculty Members</div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card card-stats">
+      <div class="stat-icon">
+        <i class="fas fa-user-tie"></i>
+      </div>
+      <div class="stat-value">{{ hod_count }}</div>
+      <div class="stat-label">HODs</div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card card-stats">
+      <div class="stat-icon">
+        <i class="fas fa-crown"></i>
+      </div>
+      <div class="stat-value">{{ principal_count }}</div>
+      <div class="stat-label">Principal</div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card card-stats">
+      <div class="stat-icon">
+        <i class="fas fa-building"></i>
+      </div>
+      <div class="stat-value">{{ departments_count }}</div>
+      <div class="stat-label">Departments</div>
+    </div>
+  </div>
+</div>
+
+<!-- Filter Bar -->
+<div class="card mb-4">
+  <div class="card-body py-3">
+    <form method="get" class="row g-3 align-items-center">
+      <div class="col-md-6">
+        <div class="input-group">
+          <span class="input-group-text"><i class="fas fa-search"></i></span>
+          <input type="text" name="q" class="form-control" placeholder="Search by name or email..." value="{{ query }}">
+        </div>
+      </div>
+      <div class="col-md-4">
+        <select name="designation" class="form-select">
+          <option value="">All Designations</option>
+          <option value="faculty" {% if designation_filter == 'faculty' %}selected{% endif %}>Faculty</option>
+          <option value="hod" {% if designation_filter == 'hod' %}selected{% endif %}>Head of Department</option>
+          <option value="principal" {% if designation_filter == 'principal' %}selected{% endif %}>Principal</option>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <button type="submit" class="btn btn-royal w-100">Filter</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Faculty List -->
+<div class="card">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <span><i class="fas fa-list"></i>Faculty Members</span>
+    <span class="badge bg-secondary">{{ faculty_list|length }} Members</span>
+  </div>
+  <div class="card-body p-0">
+    {% if faculty_list %}
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead>
+          <tr>
+            <th>Faculty</th>
+            <th>Email</th>
+            <th>Designation</th>
+            <th>Departments</th>
+            <th>Phone</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for faculty in faculty_list %}
+          <tr>
+            <td>
+              <div class="d-flex align-items-center">
+                <div class="user-avatar me-2" style="width: 38px; height: 38px; font-size: 0.8rem;">
+                  {{ faculty.user.first_name|slice:":1"|upper }}{{ faculty.user.last_name|slice:":1"|upper }}
+                </div>
+                <div>
+                  <strong>{{ faculty.user.get_full_name|default:faculty.user.email }}</strong>
+                  <br><small class="text-muted">{{ faculty.faculty_id }}</small>
+                </div>
+              </div>
+            </td>
+            <td>{{ faculty.user.email }}</td>
+            <td>
+              {% if faculty.designation == 'principal' %}
+                <span class="badge bg-danger">Principal</span>
+              {% elif faculty.designation == 'hod' %}
+                <span class="badge bg-warning text-dark">HOD</span>
+              {% else %}
+                <span class="badge bg-primary">Faculty</span>
+              {% endif %}
+            </td>
+            <td>
+              {% for dept in faculty.departments.all %}
+                <span class="badge bg-light text-dark">{{ dept.name }}</span>
+              {% empty %}
+                -
+              {% endfor %}
+            </td>
+            <td>{{ faculty.phone|default:"-" }}</td>
+            <td>
+              <div class="btn-group btn-group-sm">
+                <a href="{% url 'public:college_view_faculty' faculty.pk %}" class="btn btn-outline-secondary" title="View">
+                  <i class="fas fa-eye"></i>
+                </a>
+                <a href="{% url 'public:college_edit_faculty' faculty.pk %}" class="btn btn-outline-secondary" title="Edit">
+                  <i class="fas fa-edit"></i>
+                </a>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+      <i class="fas fa-chalkboard-teacher fa-3x text-muted mb-3"></i>
+      <h5 class="text-muted">No Faculty Members Yet</h5>
+      <p class="text-muted">Start by adding your first faculty member.</p>
+      <a href="{% url 'public:college_add_faculty' %}" class="btn btn-royal mt-2">
+        <i class="fas fa-user-plus me-2"></i>Add First Faculty
+      </a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Pagination -->
+{% if faculty_list.has_other_pages %}
+<nav class="mt-4">
+  <ul class="pagination justify-content-center">
+    {% if faculty_list.has_previous %}
+    <li class="page-item">
+      <a class="page-link" href="?page={{ faculty_list.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if designation_filter %}&designation={{ designation_filter }}{% endif %}">Previous</a>
+    </li>
+    {% endif %}
+    {% for num in faculty_list.paginator.page_range %}
+    <li class="page-item {% if faculty_list.number == num %}active{% endif %}">
+      <a class="page-link" href="?page={{ num }}{% if query %}&q={{ query }}{% endif %}{% if designation_filter %}&designation={{ designation_filter }}{% endif %}">{{ num }}</a>
+    </li>
+    {% endfor %}
+    {% if faculty_list.has_next %}
+    <li class="page-item">
+      <a class="page-link" href="?page={{ faculty_list.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if designation_filter %}&designation={{ designation_filter }}{% endif %}">Next</a>
+    </li>
+    {% endif %}
+  </ul>
+</nav>
+{% endif %}
+{% endblock %}

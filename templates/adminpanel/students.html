@@ -1,0 +1,114 @@
+﻿{% extends "adminpanel/base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+  <div class="page-header mb-0">
+    <h1 class="page-title mb-0"><i class="fas fa-user-graduate"></i>Students</h1>
+  </div>
+  <div class="d-flex gap-2 align-items-center">
+    <a href="{% url 'adminpanel:student_add' %}" class="btn btn-royal">
+      <i class="fas fa-plus me-2"></i>Add Student
+    </a>
+    <form class="d-flex search-box" method="get" action="">
+      <i class="fas fa-search search-icon"></i>
+      <input name="q" class="form-control" placeholder="Search by ID, name, email..." value="{{ query|default:'' }}" style="min-width: 280px;">
+      <button class="btn btn-royal ms-2" type="submit">Search</button>
+    </form>
+  </div>
+</div>
+
+<div class="table-container">
+  <table class="table mb-0">
+    <thead>
+      <tr>
+        <th><i class="fas fa-id-card"></i>Student ID</th>
+        <th><i class="fas fa-user"></i>Name</th>
+        <th><i class="fas fa-envelope"></i>Email</th>
+        <th><i class="fas fa-university"></i>College</th>
+        <th><i class="fas fa-graduation-cap"></i>Program</th>
+        <th class="text-center"><i class="fas fa-cogs"></i>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for s in students %}
+        <tr>
+          <td><span class="badge-royal">{{ s.student_id }}</span></td>
+          <td>
+            <div class="d-flex align-items-center gap-2">
+              <div class="user-avatar" style="width:36px;height:36px;font-size:0.8rem;">
+                {{ s.user.first_name|slice:":1"|upper }}{{ s.user.last_name|slice:":1"|upper }}
+              </div>
+              <span>{{ s.user.first_name }} {{ s.user.last_name }}</span>
+            </div>
+          </td>
+          <td>{{ s.user.email }}</td>
+          <td>
+            {% if s.college %}
+              <span class="badge-outline">{{ s.college.name }}</span>
+            {% else %}
+              <span class="text-muted">—</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if s.program %}
+              <span class="badge-outline">{{ s.program }}</span>
+            {% else %}
+              <span class="text-muted">—</span>
+            {% endif %}
+          </td>
+          <td class="text-center">
+            <a href="{% url 'adminpanel:student_edit' s.id %}" class="btn btn-sm btn-outline-primary me-1" title="Edit">
+              <i class="fas fa-edit"></i>
+            </a>
+            <a href="{% url 'adminpanel:student_delete' s.id %}" class="btn btn-sm btn-outline-danger" title="Delete">
+              <i class="fas fa-trash"></i>
+            </a>
+          </td>
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="5">
+            <div class="empty-state">
+              <i class="fas fa-users-slash"></i>
+              <p class="mb-0">No students found. <a href="{% url 'adminpanel:student_add' %}">Add one now</a>.</p>
+            </div>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% if students.has_other_pages %}
+<nav class="mt-4">
+  <ul class="pagination justify-content-center">
+    {% if students.has_previous %}
+      <li class="page-item">
+        <a class="page-link" href="?q={{ query }}&page={{ students.previous_page_number }}">
+          <i class="fas fa-chevron-left me-1"></i>Previous
+        </a>
+      </li>
+    {% else %}
+      <li class="page-item disabled"><span class="page-link"><i class="fas fa-chevron-left me-1"></i>Previous</span></li>
+    {% endif %}
+
+    {% for num in students.paginator.page_range %}
+      {% if num == students.number %}
+        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+      {% else %}
+        <li class="page-item"><a class="page-link" href="?q={{ query }}&page={{ num }}">{{ num }}</a></li>
+      {% endif %}
+    {% endfor %}
+
+    {% if students.has_next %}
+      <li class="page-item">
+        <a class="page-link" href="?q={{ query }}&page={{ students.next_page_number }}">
+          Next<i class="fas fa-chevron-right ms-1"></i>
+        </a>
+      </li>
+    {% else %}
+      <li class="page-item disabled"><span class="page-link">Next<i class="fas fa-chevron-right ms-1"></i></span></li>
+    {% endif %}
+  </ul>
+</nav>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,99 @@
+{% extends 'adminpanel/base.html' %}
+
+{% block content %}
+<div class="page-header">
+  <div class="d-flex justify-content-between align-items-center">
+    <div>
+      <h1 class="page-title"><i class="fas fa-poll"></i>Results Entry</h1>
+      <p class="page-subtitle">
+        {{ exam.name }} | {{ exam.program.name }} | Semester {{ exam.semester }}
+      </p>
+    </div>
+    <a href="{% url 'adminpanel:exam_detail' exam.pk %}" class="btn btn-outline-secondary">
+      <i class="fas fa-arrow-left me-2"></i>Back to Exam
+    </a>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-lg-8">
+    <div class="card">
+      <div class="card-header">
+        <i class="fas fa-book"></i>Select Subject to Enter Results
+      </div>
+      <div class="card-body p-0">
+        {% if subjects %}
+        <div class="list-group list-group-flush">
+          {% for subject in subjects %}
+          <a href="{% url 'adminpanel:results_by_subject' exam.pk subject.pk %}" 
+             class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+            <div>
+              <h6 class="mb-1">{{ subject.course.code }} - {{ subject.course.title }}</h6>
+              <small class="text-muted">
+                Max: {{ subject.max_marks }} | Pass: {{ subject.pass_marks }}
+                {% if subject.exam_date %} | Date: {{ subject.exam_date|date:"M d, Y" }}{% endif %}
+              </small>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+              <span class="badge bg-secondary">
+                {{ subject.results.count }} results entered
+              </span>
+              <i class="fas fa-chevron-right text-muted"></i>
+            </div>
+          </a>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+          <i class="fas fa-book fa-3x text-muted mb-3"></i>
+          <p class="text-muted">No subjects added to this exam</p>
+          <a href="{% url 'adminpanel:exam_detail' exam.pk %}" class="btn btn-royal">
+            <i class="fas fa-plus me-2"></i>Add Subjects
+          </a>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="card">
+      <div class="card-header">
+        <i class="fas fa-info-circle"></i>Exam Info
+      </div>
+      <div class="card-body">
+        <p><strong>Program:</strong> {{ exam.program.name }}</p>
+        <p><strong>Semester:</strong> {{ exam.semester }}</p>
+        <p><strong>Academic Year:</strong> {{ exam.academic_year }}</p>
+        <p><strong>Dates:</strong> {{ exam.exam_start_date|date:"M d" }} - {{ exam.exam_end_date|date:"M d, Y" }}</p>
+        <hr>
+        <p class="mb-1">
+          <strong>Results Status:</strong>
+          {% if exam.result_published %}
+            <span class="badge bg-success">Published</span>
+          {% else %}
+            <span class="badge bg-warning text-dark">Not Published</span>
+          {% endif %}
+        </p>
+        {% if exam.result_published_at %}
+        <small class="text-muted">Published on {{ exam.result_published_at|date:"M d, Y H:i" }}</small>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="card mt-3">
+      <div class="card-header">
+        <i class="fas fa-lightbulb"></i>Tips
+      </div>
+      <div class="card-body">
+        <ul class="mb-0">
+          <li>Enter marks for each subject separately</li>
+          <li>Grades are calculated automatically</li>
+          <li>Leave blank for absent students</li>
+          <li>Publish results when all subjects are complete</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

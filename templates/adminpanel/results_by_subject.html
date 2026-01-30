@@ -1,0 +1,188 @@
+{% extends 'adminpanel/base.html' %}
+
+{% block content %}
+<div class="page-header">
+  <div class="d-flex justify-content-between align-items-center">
+    <div>
+      <h1 class="page-title"><i class="fas fa-edit"></i>Enter Results</h1>
+      <p class="page-subtitle">
+        {{ subject.course.code }} - {{ subject.course.title }}
+      </p>
+    </div>
+    <a href="{% url 'adminpanel:results_entry' exam.pk %}" class="btn btn-outline-secondary">
+      <i class="fas fa-arrow-left me-2"></i>Back to Subjects
+    </a>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-lg-9">
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="fas fa-users"></i>Students ({{ student_data|length }})</span>
+        <span class="badge bg-primary">Max: {{ subject.max_marks }} | Pass: {{ subject.pass_marks }}</span>
+      </div>
+      <div class="card-body p-0">
+        {% if student_data %}
+        <form method="post">
+          {% csrf_token %}
+          <div class="table-responsive">
+            <table class="table table-hover mb-0">
+              <thead>
+                <tr>
+                  <th style="width: 50px">#</th>
+                  <th>Student</th>
+                  <th>College</th>
+                  <th style="width: 120px">Marks</th>
+                  <th style="width: 80px">Grade</th>
+                  <th style="width: 80px">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for item in student_data %}
+                <tr>
+                  <td>{{ forloop.counter }}</td>
+                  <td>
+                    <div class="fw-semibold">{{ item.student.user.get_full_name }}</div>
+                    <small class="text-muted">{{ item.student.user.email }}</small>
+                  </td>
+                  <td>
+                    {% if item.student.college %}
+                      <small>{{ item.student.college.name|truncatechars:25 }}</small>
+                    {% else %}
+                      <span class="text-muted">-</span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    <input type="number" class="form-control form-control-sm marks-input" 
+                           name="marks_{{ item.student.pk }}" 
+                           value="{{ item.result.marks_obtained|default:'' }}"
+                           min="0" max="{{ subject.max_marks }}"
+                           data-max="{{ subject.max_marks }}"
+                           data-pass="{{ subject.pass_marks }}">
+                  </td>
+                  <td class="grade-cell">
+                    {% if item.result.grade %}
+                      <span class="badge {% if item.result.is_pass %}bg-success{% else %}bg-danger{% endif %}">
+                        {{ item.result.grade }}
+                      </span>
+                    {% else %}
+                      <span class="text-muted">-</span>
+                    {% endif %}
+                  </td>
+                  <td class="status-cell">
+                    {% if item.result %}
+                      {% if item.result.is_pass %}
+                        <span class="badge bg-success">Pass</span>
+                      {% else %}
+                        <span class="badge bg-danger">Fail</span>
+                      {% endif %}
+                    {% else %}
+                      <span class="text-muted">-</span>
+                    {% endif %}
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          
+          <div class="card-footer d-flex justify-content-between align-items-center">
+            <span class="text-muted">Enter marks and save to update grades automatically</span>
+            <button type="submit" class="btn btn-royal">
+              <i class="fas fa-save me-2"></i>Save Results
+            </button>
+          </div>
+        </form>
+        {% else %}
+        <div class="text-center py-5">
+          <i class="fas fa-users fa-3x text-muted mb-3"></i>
+          <p class="text-muted">No students found for this program and semester</p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-3">
+    <div class="card">
+      <div class="card-header">
+        <i class="fas fa-info-circle"></i>Subject Info
+      </div>
+      <div class="card-body">
+        <p><strong>Course:</strong> {{ subject.course.code }}</p>
+        <p><strong>Title:</strong> {{ subject.course.title }}</p>
+        <p><strong>Max Marks:</strong> {{ subject.max_marks }}</p>
+        <p><strong>Pass Marks:</strong> {{ subject.pass_marks }}</p>
+        {% if subject.exam_date %}
+        <p><strong>Exam Date:</strong> {{ subject.exam_date|date:"M d, Y" }}</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="card mt-3">
+      <div class="card-header">
+        <i class="fas fa-chart-bar"></i>Grading Scale
+      </div>
+      <div class="card-body p-0">
+        <table class="table table-sm mb-0">
+          <tbody>
+            <tr><td>90-100%</td><td><span class="badge bg-success">O</span> Outstanding</td></tr>
+            <tr><td>80-89%</td><td><span class="badge bg-success">A+</span> Excellent</td></tr>
+            <tr><td>70-79%</td><td><span class="badge bg-success">A</span> Very Good</td></tr>
+            <tr><td>60-69%</td><td><span class="badge bg-success">B+</span> Good</td></tr>
+            <tr><td>55-59%</td><td><span class="badge bg-success">B</span> Above Avg</td></tr>
+            <tr><td>50-54%</td><td><span class="badge bg-warning text-dark">C</span> Average</td></tr>
+            <tr><td>40-49%</td><td><span class="badge bg-warning text-dark">P</span> Pass</td></tr>
+            <tr><td>&lt;40%</td><td><span class="badge bg-danger">F</span> Fail</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Auto-calculate grade preview on input
+  const marksInputs = document.querySelectorAll('.marks-input');
+  
+  marksInputs.forEach(function(input) {
+    input.addEventListener('input', function() {
+      const row = this.closest('tr');
+      const gradeCell = row.querySelector('.grade-cell');
+      const statusCell = row.querySelector('.status-cell');
+      
+      const marks = parseInt(this.value) || null;
+      const maxMarks = parseInt(this.dataset.max);
+      const passMarks = parseInt(this.dataset.pass);
+      
+      if (marks !== null) {
+        const percentage = (marks / maxMarks) * 100;
+        let grade = '';
+        let gradeClass = '';
+        
+        if (percentage >= 90) { grade = 'O'; gradeClass = 'bg-success'; }
+        else if (percentage >= 80) { grade = 'A+'; gradeClass = 'bg-success'; }
+        else if (percentage >= 70) { grade = 'A'; gradeClass = 'bg-success'; }
+        else if (percentage >= 60) { grade = 'B+'; gradeClass = 'bg-success'; }
+        else if (percentage >= 55) { grade = 'B'; gradeClass = 'bg-success'; }
+        else if (percentage >= 50) { grade = 'C'; gradeClass = 'bg-warning text-dark'; }
+        else if (percentage >= passMarks) { grade = 'P'; gradeClass = 'bg-warning text-dark'; }
+        else { grade = 'F'; gradeClass = 'bg-danger'; }
+        
+        gradeCell.innerHTML = `<span class="badge ${gradeClass}">${grade}</span>`;
+        statusCell.innerHTML = marks >= passMarks 
+          ? '<span class="badge bg-success">Pass</span>' 
+          : '<span class="badge bg-danger">Fail</span>';
+      } else {
+        gradeCell.innerHTML = '<span class="text-muted">-</span>';
+        statusCell.innerHTML = '<span class="text-muted">-</span>';
+      }
+    });
+  });
+});
+</script>
+{% endblock %}

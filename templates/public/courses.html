@@ -1,0 +1,171 @@
+{% extends "public/base.html" %}
+{% block title %}Courses - University Management System{% endblock %}
+{% block content %}
+<!-- Page Header -->
+<section class="page-header-section" style="margin-top: 76px;">
+  <div class="container">
+    <h1>Our Courses</h1>
+    <p>Explore our wide range of academic programs designed to prepare you for success.</p>
+    <div class="breadcrumb-custom">
+      <a href="{% url 'public:index' %}">Home</a>
+      <span>/</span>
+      <span>Courses</span>
+    </div>
+  </div>
+</section>
+
+<!-- Search & Filter -->
+<section class="section-light" style="padding: 30px 0;">
+  <div class="container">
+    <form method="get" class="row g-3 align-items-center">
+      <div class="col-md-8">
+        <div class="input-group">
+          <span class="input-group-text" style="background: white; border-right: none;">
+            <i class="fas fa-search" style="color: var(--royal-red);"></i>
+          </span>
+          <input type="text" name="q" class="form-control" placeholder="Search courses by name, code, or department..." value="{{ query|default:'' }}" style="border-left: none;">
+        </div>
+      </div>
+      <div class="col-md-4">
+        <button type="submit" class="btn-submit w-100">
+          <i class="fas fa-search me-2"></i>Search Courses
+        </button>
+      </div>
+    </form>
+  </div>
+</section>
+
+<!-- Courses Grid -->
+<section class="section">
+  <div class="container">
+    {% if query %}
+    <p class="text-muted mb-4">Showing results for "<strong>{{ query }}</strong>" - {{ courses|length }} course(s) found</p>
+    {% endif %}
+    
+    <div class="row g-4">
+      {% for course in courses %}
+      <div class="col-md-6 col-lg-4">
+        <div class="course-card">
+          <div class="course-header">
+            <span class="course-code">{{ course.code }}</span>
+            <h5 class="course-title">{{ course.title }}</h5>
+          </div>
+          <div class="course-body">
+            <div class="course-meta">
+              <span><i class="fas fa-star"></i> {{ course.credits }} Credits</span>
+              <span><i class="fas fa-building"></i> {% if course.department %}{{ course.department.name }}{% else %}General{% endif %}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="col-12">
+        <div class="text-center py-5">
+          <i class="fas fa-book-open fa-4x mb-3" style="color: var(--border-light);"></i>
+          <h4>No Courses Found</h4>
+          <p class="text-muted">{% if query %}No courses match your search criteria. Try a different search term.{% else %}There are no courses available at the moment.{% endif %}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    
+    {% if courses.has_other_pages %}
+    <nav class="mt-5">
+      <ul class="pagination justify-content-center" style="gap: 8px;">
+        {% if courses.has_previous %}
+        <li class="page-item">
+          <a class="page-link" href="?q={{ query }}&page={{ courses.previous_page_number }}" style="border-radius: 8px;">
+            <i class="fas fa-chevron-left"></i>
+          </a>
+        </li>
+        {% endif %}
+        
+        {% for num in courses.paginator.page_range %}
+        <li class="page-item {% if num == courses.number %}active{% endif %}">
+          <a class="page-link" href="?q={{ query }}&page={{ num }}" style="border-radius: 8px; {% if num == courses.number %}background: var(--royal-red); border-color: var(--royal-red);{% endif %}">{{ num }}</a>
+        </li>
+        {% endfor %}
+        
+        {% if courses.has_next %}
+        <li class="page-item">
+          <a class="page-link" href="?q={{ query }}&page={{ courses.next_page_number }}" style="border-radius: 8px;">
+            <i class="fas fa-chevron-right"></i>
+          </a>
+        </li>
+        {% endif %}
+      </ul>
+    </nav>
+    {% endif %}
+  </div>
+</section>
+
+<!-- Departments Section -->
+<section class="section section-light">
+  <div class="container">
+    <h2 class="section-title">Our <span>Departments</span></h2>
+    <p class="section-subtitle">We offer programs across various disciplines to cater to diverse interests.</p>
+    
+    <div class="row g-4">
+      {% for dept in departments %}
+      <div class="col-md-6 col-lg-3">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-building"></i>
+          </div>
+          <h4>{{ dept.name }}</h4>
+          <p>Code: {{ dept.code }}</p>
+        </div>
+      </div>
+      {% empty %}
+      <div class="col-md-6 col-lg-3">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-laptop-code"></i>
+          </div>
+          <h4>Computer Science</h4>
+          <p>Programming, AI, Data Science</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-3">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-calculator"></i>
+          </div>
+          <h4>Mathematics</h4>
+          <p>Pure & Applied Mathematics</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-3">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-atom"></i>
+          </div>
+          <h4>Physics</h4>
+          <p>Theoretical & Experimental</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-3">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-chart-line"></i>
+          </div>
+          <h4>Business</h4>
+          <p>Management & Finance</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="stats">
+  <div class="container text-center">
+    <h2 style="font-size: 2.2rem; margin-bottom: 1rem;">Ready to Enroll?</h2>
+    <p style="opacity: 0.9; margin-bottom: 2rem; max-width: 600px; margin-left: auto; margin-right: auto;">Take the first step towards your future. Contact us to learn more about admissions.</p>
+    <a href="{% url 'public:contact' %}" class="btn-hero">
+      <i class="fas fa-envelope me-2"></i>Contact Us
+    </a>
+  </div>
+</section>
+{% endblock %}

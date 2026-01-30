@@ -1,0 +1,194 @@
+{% extends 'public/college/base.html' %}
+
+{% block title %}Dashboard - College Portal{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title"><i class="fas fa-th-large"></i>Dashboard</h1>
+  <p class="page-subtitle">Welcome back, {{ college.name }}</p>
+</div>
+
+{% if college.status == 'pending' %}
+<!-- Pending Approval Banner -->
+<div class="pending-banner">
+  <i class="fas fa-hourglass-half"></i>
+  <h4>Your Registration is Pending Approval</h4>
+  <p>Thank you for registering with us. Your application is currently under review by the university administration.</p>
+  <p class="mt-2"><small>You will be notified once your registration has been reviewed. In the meantime, you can view and update your profile information.</small></p>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-header">
+        <i class="fas fa-info-circle"></i>What Happens Next?
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-4 text-center mb-4 mb-md-0">
+            <div class="p-3">
+              <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
+              <h6>Step 1: Registration</h6>
+              <p class="text-muted small">You've completed your registration. ✓</p>
+            </div>
+          </div>
+          <div class="col-md-4 text-center mb-4 mb-md-0">
+            <div class="p-3">
+              <i class="fas fa-clock fa-2x text-warning mb-2"></i>
+              <h6>Step 2: Approval</h6>
+              <p class="text-muted small">Waiting for university to approve your registration.</p>
+            </div>
+          </div>
+          <div class="col-md-4 text-center">
+            <div class="p-3">
+              <i class="fas fa-lock fa-2x text-muted mb-2"></i>
+              <h6>Step 3: Affiliation</h6>
+              <p class="text-muted small">After approval, select departments and apply for affiliation.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% elif college.status == 'rejected' %}
+<!-- Rejected Banner -->
+<div class="card border-danger mb-4">
+  <div class="card-body text-center py-5">
+    <i class="fas fa-times-circle fa-3x text-danger mb-3"></i>
+    <h4 class="text-danger">Registration Rejected</h4>
+    <p class="text-muted">Unfortunately, your registration has been rejected by the university.</p>
+    {% if college.rejection_reason %}
+    <div class="alert alert-danger mt-3">
+      <strong>Reason:</strong> {{ college.rejection_reason }}
+    </div>
+    {% endif %}
+    <p class="mt-3">Please contact the university administration for more information or to appeal this decision.</p>
+  </div>
+</div>
+
+{% elif college.status == 'approved' %}
+<!-- Approved - Show Full Dashboard -->
+<div class="row g-4 mb-4">
+  <!-- Status Card -->
+  <div class="col-md-4">
+    <div class="card card-stats">
+      <div class="stat-icon">
+        <i class="fas fa-building"></i>
+      </div>
+      <div class="stat-value">
+        {% if college.affiliation_status == 'approved' %}
+        <span class="text-success"><i class="fas fa-check-circle"></i></span>
+        {% elif college.affiliation_status == 'pending' %}
+        <span class="text-warning"><i class="fas fa-clock"></i></span>
+        {% else %}
+        <span class="text-muted"><i class="fas fa-minus"></i></span>
+        {% endif %}
+      </div>
+      <div class="stat-label">
+        {% if college.affiliation_status == 'approved' %}Affiliated{% elif college.affiliation_status == 'pending' %}Affiliation Pending{% else %}Not Affiliated{% endif %}
+      </div>
+    </div>
+  </div>
+  
+  <!-- Departments Card -->
+  <div class="col-md-4">
+    <div class="card card-stats">
+      <div class="stat-icon">
+        <i class="fas fa-graduation-cap"></i>
+      </div>
+      <div class="stat-value">{{ departments_count }}</div>
+      <div class="stat-label">Departments</div>
+    </div>
+  </div>
+  
+  <!-- Students Card -->
+  <div class="col-md-4">
+    <div class="card card-stats">
+      <div class="stat-icon">
+        <i class="fas fa-user-graduate"></i>
+      </div>
+      <div class="stat-value">{{ students_count }}</div>
+      <div class="stat-label">Students</div>
+    </div>
+  </div>
+</div>
+
+{% if college.affiliation_status == 'not_applied' %}
+<!-- Prompt to Apply for Affiliation -->
+<div class="card mb-4 border-info">
+  <div class="card-body text-center py-4">
+    <i class="fas fa-hand-point-right fa-2x text-info mb-3"></i>
+    <h5>Next Step: Apply for Affiliation</h5>
+    <p class="text-muted">Your registration has been approved! Now you can select departments and apply for affiliation with the university.</p>
+    <a href="{% url 'public:college_select_departments' %}" class="btn btn-royal mt-2">
+      <i class="fas fa-graduation-cap me-2"></i>Select Departments
+    </a>
+  </div>
+</div>
+{% elif college.affiliation_status == 'pending' %}
+<!-- Affiliation Pending -->
+<div class="alert alert-warning">
+  <i class="fas fa-clock me-2"></i>
+  <strong>Affiliation Pending:</strong> Your affiliation request is under review. You'll be able to enroll students once approved.
+</div>
+{% elif college.affiliation_status == 'approved' %}
+<!-- Quick Actions for Affiliated College -->
+<div class="card">
+  <div class="card-header">
+    <i class="fas fa-bolt"></i>Quick Actions
+  </div>
+  <div class="card-body">
+    <div class="row">
+      <div class="col-md-4 mb-3 mb-md-0">
+        <a href="{% url 'public:college_add_student' %}" class="btn btn-royal w-100 py-3">
+          <i class="fas fa-user-plus fa-lg mb-2 d-block"></i>
+          Add New Student
+        </a>
+      </div>
+      <div class="col-md-4 mb-3 mb-md-0">
+        <a href="{% url 'public:college_students' %}" class="btn btn-outline-secondary w-100 py-3">
+          <i class="fas fa-users fa-lg mb-2 d-block"></i>
+          View All Students
+        </a>
+      </div>
+      <div class="col-md-4">
+        <a href="{% url 'public:college_select_departments' %}" class="btn btn-outline-secondary w-100 py-3">
+          <i class="fas fa-graduation-cap fa-lg mb-2 d-block"></i>
+          View Departments
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+{% endif %}
+
+<!-- College Information -->
+<div class="card mt-4">
+  <div class="card-header">
+    <i class="fas fa-info-circle"></i>College Information
+  </div>
+  <div class="card-body">
+    <div class="row">
+      <div class="col-md-6">
+        <p><strong>College Name:</strong> {{ college.name }}</p>
+        <p><strong>Email:</strong> {{ college.email }}</p>
+        <p><strong>Phone:</strong> {{ college.phone|default:"Not provided" }}</p>
+      </div>
+      <div class="col-md-6">
+        <p><strong>Address:</strong> {{ college.address|default:"Not provided" }}</p>
+        <p><strong>Registered:</strong> {{ college.created_at|date:"F d, Y" }}</p>
+        <p><strong>Code:</strong> {{ college.code|default:"Not assigned" }}</p>
+      </div>
+    </div>
+    <div class="mt-3">
+      <a href="{% url 'public:college_profile' %}" class="btn btn-outline-secondary">
+        <i class="fas fa-edit me-2"></i>Update Profile
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends "adminpanel/base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div class="page-header mb-0">
+    <h1 class="page-title mb-0"><i class="fas fa-book"></i>{{ action }} Course</h1>
+  </div>
+  <a href="{% url 'adminpanel:courses' %}" class="btn btn-outline-royal">
+    <i class="fas fa-arrow-left me-2"></i>Back to Courses
+  </a>
+</div>
+
+<div class="card">
+  <div class="card-body p-4">
+    <form method="post">
+      {% csrf_token %}
+      <div class="row g-3">
+        <div class="col-md-4">
+          <label class="form-label"><i class="fas fa-hashtag me-1"></i>Course Code *</label>
+          <input type="text" name="code" class="form-control" required value="{{ course.code|default:'' }}" placeholder="e.g., CS101">
+        </div>
+        <div class="col-md-8">
+          <label class="form-label"><i class="fas fa-book me-1"></i>Course Title *</label>
+          <input type="text" name="title" class="form-control" required value="{{ course.title|default:'' }}">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label"><i class="fas fa-building me-1"></i>Department</label>
+          <select name="department" class="form-select">
+            <option value="">Select Department</option>
+            {% for dept in departments %}
+            <option value="{{ dept.id }}" {% if course.department_id == dept.id %}selected{% endif %}>{{ dept.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label"><i class="fas fa-star me-1"></i>Credits</label>
+          <input type="number" name="credits" class="form-control" min="0" max="10" step="0.5" value="{{ course.credits|default:3 }}">
+        </div>
+        <div class="col-12 mt-4">
+          <button type="submit" class="btn btn-royal">
+            <i class="fas fa-save me-2"></i>{{ action }} Course
+          </button>
+          <a href="{% url 'adminpanel:courses' %}" class="btn btn-outline-royal ms-2">Cancel</a>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

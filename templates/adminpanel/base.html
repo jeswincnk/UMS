@@ -1,0 +1,662 @@
+﻿<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>UMS Admin</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Sans+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --royal-red: #9B1B30;
+      --deep-red: #7A1424;
+      --light-red: #C41E3A;
+      --cream: #FDF8F5;
+      --white: #FFFFFF;
+      --gold: #D4AF37;
+      --gold-light: #F4E4BA;
+      --text-dark: #2D2D2D;
+      --text-muted: #6B7280;
+      --border-light: #E8E0DC;
+      --shadow-soft: 0 2px 15px rgba(155, 27, 48, 0.08);
+      --shadow-medium: 0 4px 25px rgba(155, 27, 48, 0.12);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Source Sans Pro', sans-serif;
+      background: var(--cream);
+      min-height: 100vh;
+      padding-top: 80px;
+      color: var(--text-dark);
+    }
+
+    h1, h2, h3, h4, h5, .brand-text {
+      font-family: 'Playfair Display', serif;
+    }
+
+    /* Navbar */
+    .navbar {
+      background: var(--white);
+      border-bottom: 3px solid var(--royal-red);
+      box-shadow: var(--shadow-soft);
+      padding: 0.7rem 1.5rem;
+    }
+
+    .navbar-brand {
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      font-size: 1.6rem;
+      color: var(--royal-red) !important;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .navbar-brand .brand-icon {
+      width: 42px;
+      height: 42px;
+      background: linear-gradient(135deg, var(--royal-red), var(--deep-red));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--white);
+      font-size: 1.2rem;
+    }
+
+    .nav-link {
+      color: var(--text-dark) !important;
+      font-weight: 600;
+      padding: 0.7rem 1.2rem !important;
+      margin: 0 0.15rem;
+      border-radius: 6px;
+      position: relative;
+      transition: all 0.25s ease;
+    }
+
+    .nav-link:hover {
+      color: var(--royal-red) !important;
+      background: rgba(155, 27, 48, 0.05);
+    }
+
+    .nav-link.active {
+      color: var(--white) !important;
+      background: linear-gradient(135deg, var(--royal-red), var(--deep-red));
+    }
+
+    .nav-link i {
+      margin-right: 8px;
+      font-size: 0.9rem;
+    }
+
+    /* User Section */
+    .user-section {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 14px;
+      background: var(--cream);
+      border-radius: 30px;
+      border: 1px solid var(--border-light);
+    }
+
+    .user-avatar {
+      width: 34px;
+      height: 34px;
+      background: linear-gradient(135deg, var(--royal-red), var(--light-red));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--white);
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+
+    .user-name {
+      font-weight: 600;
+      color: var(--text-dark);
+      font-size: 0.9rem;
+    }
+
+    .btn-logout {
+      background: transparent;
+      border: 2px solid var(--royal-red);
+      color: var(--royal-red) !important;
+      border-radius: 6px;
+      padding: 6px 16px !important;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: all 0.25s ease;
+    }
+
+    .btn-logout:hover {
+      background: var(--royal-red);
+      color: var(--white) !important;
+    }
+
+    /* Main Container */
+    .main-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+
+    /* Page Header */
+    .page-header {
+      margin-bottom: 2rem;
+    }
+
+    .page-title {
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: var(--text-dark);
+      margin-bottom: 0.5rem;
+    }
+
+    .page-title i {
+      color: var(--royal-red);
+      margin-right: 10px;
+    }
+
+    .page-subtitle {
+      color: var(--text-muted);
+      font-size: 1rem;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--white);
+      border: 1px solid var(--border-light);
+      border-radius: 12px;
+      box-shadow: var(--shadow-soft);
+      transition: all 0.3s ease;
+      overflow: hidden;
+    }
+
+    .card:hover {
+      box-shadow: var(--shadow-medium);
+      transform: translateY(-4px);
+    }
+
+    .card-stats {
+      text-align: center;
+      padding: 1.75rem 1.5rem;
+      border-top: 4px solid var(--royal-red);
+    }
+
+    .card-stats .stat-icon {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, var(--royal-red), var(--deep-red));
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1rem;
+      color: var(--white);
+      font-size: 1.5rem;
+    }
+
+    .card-stats .stat-value {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--royal-red);
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+
+    .card-stats .stat-label {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .card-header {
+      background: var(--cream);
+      border-bottom: 1px solid var(--border-light);
+      padding: 1rem 1.25rem;
+      font-family: 'Playfair Display', serif;
+      font-weight: 600;
+      font-size: 1.1rem;
+      color: var(--text-dark);
+    }
+
+    .card-header i {
+      color: var(--royal-red);
+      margin-right: 10px;
+    }
+
+    .card-body {
+      padding: 1.25rem;
+    }
+
+    /* Tables */
+    .table-container {
+      background: var(--white);
+      border-radius: 12px;
+      border: 1px solid var(--border-light);
+      box-shadow: var(--shadow-soft);
+      overflow: hidden;
+    }
+
+    .table {
+      margin-bottom: 0;
+    }
+
+    .table thead {
+      background: linear-gradient(135deg, var(--royal-red), var(--deep-red)) !important;
+    }
+
+    .table thead th {
+      color: var(--white) !important;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.8rem;
+      letter-spacing: 0.5px;
+      padding: 1rem 1.25rem;
+      border: none;
+      background: transparent !important;
+    }
+
+    .table thead.table-light {
+      background: linear-gradient(135deg, var(--royal-red), var(--deep-red)) !important;
+    }
+
+    .table thead.table-light th {
+      color: var(--white) !important;
+      background: transparent !important;
+    }
+
+    .table thead th i {
+      margin-right: 8px;
+      opacity: 0.85;
+    }
+
+    .table tbody tr {
+      transition: all 0.2s ease;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .table tbody tr:last-child {
+      border-bottom: none;
+    }
+
+    .table tbody tr:hover {
+      background: rgba(155, 27, 48, 0.03);
+    }
+
+    .table tbody td {
+      padding: 1rem 1.25rem;
+      vertical-align: middle;
+      color: var(--text-dark);
+    }
+
+    /* Badges */
+    .badge-royal,
+    .bg-royal-light.text-royal,
+    .badge.bg-royal-light {
+      background: linear-gradient(135deg, var(--royal-red), var(--deep-red)) !important;
+      color: var(--white) !important;
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.8rem;
+    }
+
+    .badge-outline {
+      background: rgba(155, 27, 48, 0.1);
+      color: var(--deep-red);
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.8rem;
+      border: 1px solid rgba(155, 27, 48, 0.3);
+    }
+
+    /* Buttons */
+    .btn-royal {
+      background: linear-gradient(135deg, var(--royal-red), var(--deep-red));
+      border: none;
+      color: var(--white);
+      padding: 0.65rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: all 0.25s ease;
+    }
+
+    .btn-royal:hover {
+      background: linear-gradient(135deg, var(--deep-red), var(--royal-red));
+      color: var(--white);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(155, 27, 48, 0.3);
+    }
+
+    .btn-outline-royal {
+      background: transparent;
+      border: 2px solid var(--royal-red);
+      color: var(--royal-red);
+      padding: 0.6rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: all 0.25s ease;
+    }
+
+    .btn-outline-royal:hover {
+      background: var(--royal-red);
+      color: var(--white);
+    }
+
+    /* Form Controls */
+    .form-control {
+      background: var(--white);
+      border: 2px solid var(--border-light);
+      border-radius: 8px;
+      padding: 0.7rem 1rem;
+      font-size: 0.95rem;
+      transition: all 0.25s ease;
+    }
+
+    .form-control:focus {
+      border-color: var(--royal-red);
+      box-shadow: 0 0 0 3px rgba(155, 27, 48, 0.1);
+    }
+
+    .form-control::placeholder {
+      color: var(--text-muted);
+    }
+
+    .form-label {
+      font-weight: 600;
+      color: var(--text-dark);
+      margin-bottom: 0.5rem;
+    }
+
+    .form-label i {
+      color: var(--royal-red);
+      margin-right: 6px;
+    }
+
+    /* Search Box */
+    .search-box {
+      position: relative;
+    }
+
+    .search-box .search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+    }
+
+    .search-box .form-control {
+      padding-left: 42px;
+    }
+
+    /* Pagination */
+    .pagination {
+      gap: 6px;
+    }
+
+    .page-link {
+      border: 1px solid var(--border-light);
+      color: var(--text-dark);
+      border-radius: 8px !important;
+      padding: 0.55rem 0.95rem;
+      font-weight: 600;
+      transition: all 0.25s ease;
+    }
+
+    .page-link:hover {
+      background: var(--royal-red);
+      border-color: var(--royal-red);
+      color: var(--white);
+    }
+
+    .page-item.active .page-link {
+      background: linear-gradient(135deg, var(--royal-red), var(--deep-red));
+      border-color: var(--royal-red);
+    }
+
+    .page-item.disabled .page-link {
+      background: var(--cream);
+      color: var(--text-muted);
+    }
+
+    /* Alerts */
+    .alert {
+      border-radius: 10px;
+      border: none;
+      padding: 1rem 1.25rem;
+    }
+
+    .alert-success {
+      background: #D1FAE5;
+      color: #065F46;
+    }
+
+    .alert-danger {
+      background: #FEE2E2;
+      color: #991B1B;
+    }
+
+    .alert i {
+      margin-right: 10px;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border-light);
+      margin-top: 3rem;
+      background: var(--white);
+    }
+
+    footer .heart {
+      color: var(--royal-red);
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: var(--text-muted);
+    }
+
+    .empty-state i {
+      font-size: 3rem;
+      color: var(--border-light);
+      margin-bottom: 1rem;
+    }
+
+    /* Quick Actions */
+    .quick-action-btn {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 1rem 1.25rem;
+      background: var(--white);
+      border: 1px solid var(--border-light);
+      border-radius: 10px;
+      text-decoration: none;
+      color: var(--text-dark);
+      font-weight: 600;
+      transition: all 0.25s ease;
+    }
+
+    .quick-action-btn:hover {
+      border-color: var(--royal-red);
+      color: var(--royal-red);
+      transform: translateX(5px);
+    }
+
+    .quick-action-btn i {
+      width: 40px;
+      height: 40px;
+      background: rgba(155, 27, 48, 0.1);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--royal-red);
+    }
+
+    /* Status Badge */
+    .status-online {
+      background: #D1FAE5;
+      color: #065F46;
+      padding: 0.3rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    /* Divider */
+    .divider {
+      height: 1px;
+      background: var(--border-light);
+      margin: 1rem 0;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .navbar-brand .brand-text {
+        font-size: 1.3rem;
+      }
+      
+      .page-title {
+        font-size: 1.5rem;
+      }
+      
+      .card-stats .stat-value {
+        font-size: 2rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="{% url 'adminpanel:dashboard' %}">
+        <span class="brand-icon"><i class="fas fa-university"></i></span>
+        <span class="brand-text">UMS Admin</span>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbars">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbars">
+        {% if user.is_authenticated %}
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="{% url 'adminpanel:dashboard' %}">
+              <i class="fas fa-th-large"></i>Dashboard
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if '/colleges' in request.path %}active{% endif %}" href="{% url 'adminpanel:colleges' %}">
+              <i class="fas fa-university"></i>Colleges
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if '/departments' in request.path %}active{% endif %}" href="{% url 'adminpanel:departments' %}">
+              <i class="fas fa-building"></i>Departments
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if '/programs' in request.path %}active{% endif %}" href="{% url 'adminpanel:programs' %}">
+              <i class="fas fa-graduation-cap"></i>Programs
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if '/courses' in request.path %}active{% endif %}" href="{% url 'adminpanel:courses' %}">
+              <i class="fas fa-book"></i>Courses
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if '/enrollments' in request.path %}active{% endif %}" href="{% url 'adminpanel:enrollments' %}">
+              <i class="fas fa-clipboard-list"></i>Enrollments
+            </a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle {% if '/exams' in request.path or '/question-papers' in request.path or '/notifications' in request.path %}active{% endif %}" href="#" role="button" data-bs-toggle="dropdown">
+              <i class="fas fa-graduation-cap"></i>Exams
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="{% url 'adminpanel:notifications' %}"><i class="fas fa-bell me-2"></i>Notifications</a></li>
+              <li><a class="dropdown-item" href="{% url 'adminpanel:exams' %}"><i class="fas fa-file-alt me-2"></i>University Exams</a></li>
+              <li><a class="dropdown-item" href="{% url 'adminpanel:question_papers' %}"><i class="fas fa-file-pdf me-2"></i>Question Papers</a></li>
+            </ul>
+          </li>
+        </ul>
+        {% else %}
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0"></ul>
+        {% endif %}
+        <div class="user-section">
+          {% if user.is_authenticated %}
+          <div class="user-info">
+            <div class="user-avatar">{{ user.first_name|slice:":1"|default:"U" }}</div>
+            <span class="user-name">{{ user.first_name|default:user.email }}</span>
+          </div>
+          <form method="post" action="{% url 'logout' %}" style="display:inline;">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="/accounts/login/">
+            <button type="submit" class="btn btn-logout">
+              <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+          </form>
+          {% else %}
+          <a class="btn btn-royal" href="{% url 'login' %}?next={{ request.path }}">
+            <i class="fas fa-sign-in-alt me-2"></i>Login
+          </a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="main-container">
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+      <i class="fas fa-{% if message.tags == 'success' %}check-circle{% else %}exclamation-circle{% endif %}"></i>
+      {{ message }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer>
+    <p class="mb-0">
+      <i class="fas fa-university me-2"></i>
+      University Management System &bull; <a href="{% url 'public:index' %}" style="color: var(--royal-red); text-decoration: none;">Visit Website</a> &bull; Crafted with <span class="heart">♥</span> using Django
+    </p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
