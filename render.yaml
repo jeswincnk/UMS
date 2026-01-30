@@ -9,7 +9,7 @@ services:
     name: ums
     plan: free
     runtime: python
-    buildCommand: "./build.sh"
+    buildCommand: "bash build.sh"
     startCommand: "gunicorn ums_project.wsgi:application"
     envVars:
       - key: DATABASE_URL
