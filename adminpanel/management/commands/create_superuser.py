@@ -19,16 +19,25 @@ class Command(BaseCommand):
             return
         
         if User.objects.filter(email=email).exists():
+            # Update existing user to ensure it's a superuser
+            user = User.objects.get(email=email)
+            user.set_password(password)
+            user.is_staff = True
+            user.is_superuser = True
+            user.is_active = True
+            user.role = 'admin'
+            user.save()
             self.stdout.write(
-                self.style.WARNING(f'Superuser with email {email} already exists. Skipping.')
+                self.style.SUCCESS(f'Updated existing user to superuser: {email}')
             )
             return
         
-        User.objects.create_superuser(
+        user = User.objects.create_superuser(
             email=email,
             password=password,
             first_name='Admin',
-            last_name='User'
+            last_name='User',
+            role='admin'
         )
         
         self.stdout.write(
