@@ -8,6 +8,10 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'dev-secret-key')
 DEBUG = os.environ.get('DEBUG', 'True') in ('True', '1')
 
 ALLOWED_HOSTS = ['*']
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.onrender.com',
+    'https://*.railway.app',
+]
 
 # Apps
 INSTALLED_APPS = [
@@ -30,6 +34,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -59,7 +64,13 @@ TEMPLATES = [
 WSGI_APPLICATION = 'ums_project.wsgi.application'
 
 # Database - default to SQLite for quick start; use env vars for MySQL
-if os.environ.get('DB_NAME'):
+import dj_database_url
+
+if os.environ.get('DATABASE_URL'):
+    DATABASES = {
+        'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'))
+    }
+elif os.environ.get('DB_NAME'):
     DATABASES = {
         'default': {
             'ENGINE': os.environ.get('DB_ENGINE', 'django.db.backends.mysql'),
@@ -90,6 +101,8 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Media files (uploads)
 MEDIA_URL = '/media/'

@@ -3,3 +3,7 @@ PyMySQL
 djangorestframework
 python-dotenv
 django-widget-tweaks
+gunicorn
+whitenoise
+dj-database-url
+psycopg2-binary
