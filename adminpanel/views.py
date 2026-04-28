@@ -909,9 +909,20 @@ def exam_detail(request, pk):
     exam = get_object_or_404(UniversityExam, pk=pk)
     subjects = exam.subjects.select_related('course').all()
     
-    # Get courses for the exam's program department that are not already added
+    # Get courses for the exam's program and semester that are not already added
     added_course_ids = subjects.values_list('course_id', flat=True)
-    available_courses = Course.objects.filter(department=exam.program.department).exclude(id__in=added_course_ids)
+    semester_course_ids = ProgramSemesterCourse.objects.filter(
+        program=exam.program,
+        semester=exam.semester
+    ).values_list('course_id', flat=True)
+    if semester_course_ids:
+        available_courses = Course.objects.filter(
+            id__in=semester_course_ids
+        ).exclude(id__in=added_course_ids).order_by('code')
+    else:
+        available_courses = Course.objects.filter(
+            department=exam.program.department
+        ).exclude(id__in=added_course_ids).order_by('code')
     
     context = {
         'exam': exam,

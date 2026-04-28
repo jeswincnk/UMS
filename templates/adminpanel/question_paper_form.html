@@ -129,29 +129,46 @@
 document.addEventListener('DOMContentLoaded', function() {
   const examSelect = document.getElementById('exam');
   const subjectSelect = document.getElementById('exam_subject');
-  
+
+  function updateSubjects(examId) {
+    if (!examId) {
+      subjectSelect.innerHTML = '<option value="">Select exam first</option>';
+      subjectSelect.disabled = true;
+      return;
+    }
+
+    fetch(`{% url 'adminpanel:get_exam_subjects' %}?exam_id=${examId}`)
+      .then(response => response.json())
+      .then(data => {
+        subjectSelect.innerHTML = '';
+        if (data.subjects && data.subjects.length > 0) {
+          subjectSelect.appendChild(new Option('Select Subject', ''));
+          data.subjects.forEach(function(subject) {
+            const option = document.createElement('option');
+            option.value = subject.id;
+            option.textContent = subject.name;
+            subjectSelect.appendChild(option);
+          });
+          subjectSelect.disabled = false;
+        } else {
+          subjectSelect.appendChild(new Option('No subjects available for selected exam', ''));
+          subjectSelect.disabled = true;
+        }
+      })
+      .catch(() => {
+        subjectSelect.innerHTML = '<option value="">Unable to load subjects</option>';
+        subjectSelect.disabled = true;
+      });
+  }
+
   if (examSelect && subjectSelect) {
     examSelect.addEventListener('change', function() {
-      const examId = this.value;
-      
-      if (examId) {
-        fetch(`{% url 'adminpanel:get_exam_subjects' %}?exam_id=${examId}`)
-          .then(response => response.json())
-          .then(data => {
-            subjectSelect.innerHTML = '<option value="">Select Subject</option>';
-            data.subjects.forEach(function(subject) {
-              const option = document.createElement('option');
-              option.value = subject.id;
-              option.textContent = subject.name;
-              subjectSelect.appendChild(option);
-            });
-            subjectSelect.disabled = false;
-          });
-      } else {
-        subjectSelect.innerHTML = '<option value="">Select exam first</option>';
-        subjectSelect.disabled = true;
-      }
+      updateSubjects(this.value);
     });
+
+    if (examSelect.value) {
+      updateSubjects(examSelect.value);
+    }
   }
 });
 </script>

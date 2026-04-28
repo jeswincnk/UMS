@@ -3,9 +3,91 @@
 {% block title %}Attendance - Faculty Portal{% endblock %}
 
 {% block content %}
-<div class="page-header">
-  <h1 class="page-title"><i class="fas fa-clipboard-check"></i> Attendance Management</h1>
-  <p class="page-subtitle">View and edit attendance for your subjects</p>
+<div class="page-header d-flex justify-content-between align-items-start">
+  <div>
+    <h1 class="page-title"><i class="fas fa-clipboard-check"></i> Attendance Management</h1>
+    <p class="page-subtitle">View and edit attendance for your subjects</p>
+  </div>
+  <a href="{% url 'public:faculty_add_attendance' %}" class="btn btn-warning mt-2">
+    <i class="fas fa-plus me-1"></i> Add Attendance
+  </a>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-3">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h6 class="text-uppercase text-muted mb-2">Sessions</h6>
+        <h3 class="mb-1">{{ summary.total_sessions }}</h3>
+        <p class="mb-0 text-muted">Attendance sessions tracked</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h6 class="text-uppercase text-muted mb-2">Records</h6>
+        <h3 class="mb-1">{{ summary.total_records }}</h3>
+        <p class="mb-0 text-muted">Student attendance entries</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h6 class="text-uppercase text-muted mb-2">Attendance Rate</h6>
+        <h3 class="mb-1">{{ summary.attendance_rate }}%</h3>
+        <p class="mb-0 text-muted">Overall present percentage</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h6 class="text-uppercase text-muted mb-2">Recent Absent</h6>
+        <h3 class="mb-1">{{ summary.absent }}</h3>
+        <p class="mb-0 text-muted">Marked absent</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card mb-4">
+  <div class="card-header">
+    <i class="fas fa-chart-line me-2"></i>Department Attendance Progress
+  </div>
+  <div class="card-body">
+    {% if department_progress %}
+    <div class="table-responsive">
+      <table class="table table-borderless mb-0">
+        <thead>
+          <tr>
+            <th>Department</th>
+            <th>Total</th>
+            <th>Present</th>
+            <th>Absent</th>
+            <th>Leave</th>
+            <th>Rate</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in department_progress %}
+          <tr>
+            <td>{{ item.department }}</td>
+            <td>{{ item.total }}</td>
+            <td>{{ item.present }}</td>
+            <td>{{ item.absent }}</td>
+            <td>{{ item.leave }}</td>
+            <td>{{ item.rate }}%</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p class="text-muted mb-0">No department attendance progress available yet.</p>
+    {% endif %}
+  </div>
 </div>
 
 <div class="card">

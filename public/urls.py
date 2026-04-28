@@ -39,6 +39,7 @@ urlpatterns = [
     path('faculty/', views.faculty_dashboard, name='faculty_dashboard'),
     path('faculty/profile/', views.faculty_profile, name='faculty_profile'),
     path('faculty/attendance/', views.faculty_attendance, name='faculty_attendance'),
+    path('faculty/attendance/add/', views.faculty_add_attendance, name='faculty_add_attendance'),
     path('faculty/attendance/<int:session_id>/edit/', views.faculty_edit_attendance, name='faculty_edit_attendance'),
     path('faculty/notifications/', views.faculty_notifications, name='faculty_notifications'),
     

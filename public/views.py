@@ -1347,15 +1347,58 @@ def faculty_attendance(request):
     
     # Get attendance sessions for subjects in their departments
     dept_ids = list(departments.values_list('id', flat=True))
-    sessions = AttendanceSession.objects.filter(
+    all_sessions = AttendanceSession.objects.filter(
         college=college,
         department_id__in=dept_ids
-    ).select_related('subject', 'department', 'created_by__user')[:30]
-    
+    ).select_related('subject', 'department', 'created_by__user').order_by('-date')
+    sessions = all_sessions[:30]
+
+    attendance_records = StudentAttendance.objects.filter(session__in=all_sessions)
+    attendance_stats = attendance_records.aggregate(
+        total=Count('id'),
+        present=Count('id', filter=Q(status='present')),
+        absent=Count('id', filter=Q(status='absent')),
+        leave=Count('id', filter=Q(status='leave')),
+    )
+    total = attendance_stats.get('total') or 0
+    present = attendance_stats.get('present') or 0
+    absent = attendance_stats.get('absent') or 0
+    leave = attendance_stats.get('leave') or 0
+    overall_percentage = round((present / total) * 100, 1) if total else 0
+
+    raw_dept_progress = attendance_records.values('session__department__name').annotate(
+        total=Count('id'),
+        present=Count('id', filter=Q(status='present')),
+        absent=Count('id', filter=Q(status='absent')),
+        leave=Count('id', filter=Q(status='leave')),
+    ).order_by('session__department__name')
+
+    department_progress = []
+    for item in raw_dept_progress:
+        dept_total = item.get('total') or 0
+        present_count = item.get('present') or 0
+        department_progress.append({
+            'department': item.get('session__department__name'),
+            'total': dept_total,
+            'present': present_count,
+            'absent': item.get('absent') or 0,
+            'leave': item.get('leave') or 0,
+            'rate': round((present_count / dept_total) * 100, 1) if dept_total else 0,
+        })
+
     context = {
         'faculty': faculty,
         'college': college,
         'sessions': sessions,
+        'summary': {
+            'total_sessions': all_sessions.count(),
+            'total_records': total,
+            'present': present,
+            'absent': absent,
+            'leave': leave,
+            'attendance_rate': overall_percentage,
+        },
+        'department_progress': department_progress,
     }
     return render(request, 'public/faculty/attendance.html', context)
 
@@ -1416,6 +1459,65 @@ def faculty_edit_attendance(request, session_id):
         'existing_attendance': existing_attendance,
     }
     return render(request, 'public/faculty/edit_attendance.html', context)
+
+
+@login_required
+@faculty_required
+def faculty_add_attendance(request):
+    """Faculty may create a new attendance session for their department subjects."""
+    faculty = request.user.faculty_profile
+    college = faculty.college
+    departments = faculty.departments.all()
+    dept_ids = list(departments.values_list('id', flat=True))
+    subjects = Course.objects.filter(department_id__in=dept_ids)
+    programs = Program.objects.filter(department_id__in=dept_ids)
+
+    if request.method == 'POST':
+        department_id = request.POST.get('department')
+        subject_id = request.POST.get('subject')
+        program_id = request.POST.get('program')
+        semester = request.POST.get('semester', 1)
+        attendance_date = request.POST.get('date')
+
+        if not all([department_id, subject_id, program_id, semester, attendance_date]):
+            messages.error(request, 'Please fill all required fields.')
+        else:
+            department = Department.objects.get(pk=department_id)
+            subject = Course.objects.get(pk=subject_id)
+            program = Program.objects.get(pk=program_id)
+
+            existing = AttendanceSession.objects.filter(
+                college=college,
+                subject=subject,
+                date=attendance_date,
+                semester=semester
+            ).first()
+
+            if existing:
+                messages.warning(request, 'Attendance session already exists for this subject and date.')
+                return redirect('public:faculty_edit_attendance', session_id=existing.pk)
+
+            session = AttendanceSession.objects.create(
+                college=college,
+                department=department,
+                subject=subject,
+                program=program,
+                semester=int(semester),
+                date=attendance_date,
+                created_by=faculty
+            )
+            messages.success(request, 'Attendance session created. Now edit the session to mark students.')
+            return redirect('public:faculty_edit_attendance', session_id=session.pk)
+
+    context = {
+        'faculty': faculty,
+        'college': college,
+        'departments': departments,
+        'subjects': subjects,
+        'programs': programs,
+        'today': date.today().isoformat(),
+    }
+    return render(request, 'public/faculty/add_attendance.html', context)
 
 
 # ========== STUDENT ATTENDANCE ==========
